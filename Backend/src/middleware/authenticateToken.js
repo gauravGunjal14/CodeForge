@@ -1,0 +1,38 @@
+const jwt = require('jsonwebtoken');
+require('dotenv').config();
+
+const authenticateToken = async (req, res, next) => {
+    try{
+        const token = req.cookies.token;
+        if (!token) {
+            return res.status(401).json({ message: "Access denied. No token provided." });
+        }
+
+        const payload = jwt.verify(token, process.env.JWT_KEY);
+        
+        const {_id} = payload;
+        if(!_id){
+            return res.status(401).json({ message: "Access denied. Invalid token." });
+        }
+
+        const isPresent = await User.findOne({_id});
+        if(!isPresent){
+            return res.status(401).json({ message: "Access denied. Invalid token." });
+        }
+
+        const isBlocked = await redisClient.exists(`token:${token}`);
+
+        if(isBlocked){
+            return res.status(401).json({ message: "Access denied. Token is blocked." });
+        }
+
+        req.isPresent = isPresent;
+
+        next();
+    }
+    catch(err){
+        res.status(403).json({ message: "Invalid or expired token." });
+    }
+}
+
+module.exports = authenticateToken;
