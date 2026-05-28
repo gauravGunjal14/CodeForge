@@ -1,6 +1,6 @@
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
-const User = require('../models/Users');
+const UserModel = require('../models/UserModel');
 const redisClient = require('../config/redis');
 
 const adminMiddleware = async (req, res, next) => {
@@ -17,7 +17,7 @@ const adminMiddleware = async (req, res, next) => {
             return res.status(401).json({ message: "Access denied. Invalid token." });
         }
 
-        const isPresent = await User.findOne({_id});
+        const isPresent = await UserModel.findOne({_id});
         if(!isPresent){
             return res.status(401).json({ message: "Access denied. Invalid token." });
         }
