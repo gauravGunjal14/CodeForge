@@ -4,9 +4,8 @@ const userModel = require('../models/UserModel');
 const { getLanguageById, submitBatch, submitToken } = require('../utils/problemUtility');
 
 const createProblem = async (req, res) => {
-
-    const { title, description, difficulty, tags, visibleTestCases, hiddenTestCases, startCode, referenceSolution, problemCreator } = req.body;
     try {
+        const { title, description, difficulty, tags, visibleTestCases, hiddenTestCases, startCode, referenceSolution, problemCreator } = req.body;
         for (const { language, completeCode } of referenceSolution) {
 
             const languageId = getLanguageById(language);
@@ -60,12 +59,53 @@ const createProblem = async (req, res) => {
 
 const updateProblem = async (req, res) => {
     try {
-        const problemId = req.params.id;
-        const updatedProblem = await problemModel.findByIdAndUpdate(problemId, req.body, { new: true });
-        if (!updatedProblem) {
-            return res.status(404).json({ message: "Problem not found" });
+        const { title, description, difficulty, tags, visibleTestCases, hiddenTestCases, startCode, referenceSolution, problemCreator } = req.body;
+        const { id } = req.params;
+        if (!id) {
+            res.status(400).json({ message: "Problem id is required" });
         }
-        res.status(200).json({ message: "Problem updated successfully", problem: updatedProblem });
+
+        const existingProblem = await problemModel.findById(id);
+        if (!existingProblem) {
+            return res.status(404).send("ID is not present.");
+        }
+
+        for (const { language, completeCode } of referenceSolution) {
+
+            const languageId = getLanguageById(language);
+            if (!languageId) {
+                return res.status(400).json({ message: `Unsupported language: ${language}` });
+            }
+
+            const submissions = visibleTestCases.map((testCase) => ({
+                source_code: completeCode,
+                language_id: languageId,
+                stdin: testCase.input,
+                expected_output: testCase.output
+            }));
+
+            const submitBatchs = await submitBatch(submissions);
+
+            if (!submitBatchs || !Array.isArray(submitBatchs)) {
+                return res.status(400).json({
+                    message: "Judge0 did not return submission tokens"
+                });
+            }
+
+            const resultTokens = submitBatchs.map((value) => value.token);
+
+            const testResults = await submitToken(resultTokens);
+
+            for (const test of testResults) {
+                if (test.status.id !== 3) {
+                    return res.status(400).json({ message: `Reference solution failed for test case with input: ${test.stdin}` });
+                }
+            }
+        }
+
+        const newProblem = await problemModel.findByIdAndUpdate(id, { ...req.body }, { runValidators: true, new: true });
+
+        res.status(200).json({ message: "Problem updated successfully", problem: newProblem });
     }
     catch (err) {
         res.status(500).json({ message: "Error updating problem", error: err.message });

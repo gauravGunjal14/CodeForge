@@ -3,7 +3,7 @@ require('dotenv').config();
 const UserModel = require('../models/UserModel');
 const redisClient = require('../config/redis');
 
-const authenticateToken = async (req, res, next) => {
+const userMiddleware = async (req, res, next) => {
     try{
         const token = req.cookies.token;
         if (!token) {
@@ -37,4 +37,4 @@ const authenticateToken = async (req, res, next) => {
     }
 }
 
-module.exports = authenticateToken;
+module.exports = userMiddleware;
