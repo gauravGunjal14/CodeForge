@@ -4,67 +4,79 @@ const { Schema } = mongoose;
 const problemSchema = new Schema({
     title: {
         type: String,
-        reqired: true
+        required: true
     },
     description: {
         type: String,
-        reqired: true
+        required: true
     },
     difficulty: {
         type: String,
         enum: ['Easy', 'Medium', 'Hard'],
-        reqired: true
+        required: true
     },
     tags: {
         type: String,
         enum: ['Array', 'String', 'Linked List', 'Tree', 'Graph', 'Dynamic Programming', 'Backtracking', 'Greedy', 'Sorting', 'Searching'],
-        reqired: true
+        required: true
     },
     visibleTestCases: [
         {
             input: {
                 type: String,
-                reqired: true
+                required: true
             },
             output: {
                 type: String,
-                reqired: true
+                required: true
             },
             explanation: {
                 type: String,
-                reqired: true
+                required: true
             }
         }],
     hiddenTestCases: [
         {
             input: {
                 type: String,
-                reqired: true
+                required: true
             },
             output: {
                 type: String,
-                reqired: true
+                required: true
             }
         }],
     startCode: [
         {
             language: {
                 type: String,
-                enum: ['JavaScript', 'Python', 'Java', 'C++', 'C#'],
-                reqired: true
+                enum: ['JavaScript', 'Java', 'C++'],
+                required: true
             },
             initialCode: {
                 type: String,
-                reqired: true
+                required: true
+            }
+        }
+    ],
+    referenceSolution: [
+        {
+            language: {
+                type: String,
+                enum: ['JavaScript', 'Java', 'C++'],
+                required: true
+            },
+            completeCode: {
+                type: String,
+                required: true
             }
         }
     ],
     problemCreator: {
         type: Schema.Types.ObjectId,
         ref: 'User',
-        reqired: true
-    } 
-
+        required: true
+    }
 });
 
 const problemModel = mongoose.model('Problem', problemSchema);

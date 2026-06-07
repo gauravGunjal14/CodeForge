@@ -1,14 +1,60 @@
+const { get } = require('mongoose');
 const problemModel = require('../models/problemModel');
 const userModel = require('../models/UserModel');
+const { getLanguageById, submitBatch, submitToken } = require('../utils/problemUtility');
 
 const createProblem = async (req, res) => {
+
+    const { title, description, difficulty, tags, visibleTestCases, hiddenTestCases, startCode, referenceSolution, problemCreator } = req.body;
     try {
-        const problem = new problemModel(req.body);
-        await problem.save();
-        res.status(201).json({ message: "Problem created successfully" });
+        for (const { language, completeCode } of referenceSolution) {
+
+            const languageId = getLanguageById(language);
+            if (!languageId) {
+                return res.status(400).json({ message: `Unsupported language: ${language}` });
+            }
+
+            const submissions = visibleTestCases.map((testCase) => ({
+                source_code: completeCode,
+                language_id: languageId,
+                stdin: testCase.input,
+                expected_output: testCase.output
+            }));
+
+            const submitBatchs = await submitBatch(submissions);
+
+            if (!submitBatchs || !Array.isArray(submitBatchs)) {
+                return res.status(400).json({
+                    message: "Judge0 did not return submission tokens"
+                });
+            }
+
+            const resultTokens = submitBatchs.map((value) => value.token);
+
+            const testResults = await submitToken(resultTokens);
+
+            for (const test of testResults) {
+                if (test.status.id !== 3) {
+                    return res.status(400).json({ message: `Reference solution failed for test case with input: ${test.stdin}` });
+                }
+            }
+        }
+
+        const userProblem = await problemModel.create({
+            ...req.body,
+            problemCreator: req.result._id
+        });
+
+        res.status(201).json({ message: "Problem created successfully", problem: userProblem });
     }
     catch (err) {
-        res.status(500).json({ message: "Error creating problem", error: err.message });
+        console.error(err);
+
+        res.status(500).json({
+            message: "Error creating problem",
+            error: err.message,
+            stack: err.stack
+        });
     }
 };
 
@@ -27,7 +73,7 @@ const updateProblem = async (req, res) => {
 };
 
 const deleteProblem = async (req, res) => {
-    try{
+    try {
         const problemId = req.params.id;
         const deletedProblem = await problemModel.findByIdAndDelete(problemId);
         if (!deletedProblem) {
@@ -68,19 +114,19 @@ const getProblemsByUser = async (req, res) => {
     try {
         const { userId } = req.params;
         if (!mongoose.Types.ObjectId.isValid(userId)) {
-            return res.status(400).json({message: "Invalid user id"});
+            return res.status(400).json({ message: "Invalid user id" });
         }
 
         const user = await UserModel.findById(userId);
         if (!user) {
-            return res.status(404).json({message: "User not found"});
+            return res.status(404).json({ message: "User not found" });
         }
 
-        res.status(200).json({problemsSolved: user.problemSolved});
+        res.status(200).json({ problemsSolved: user.problemSolved });
 
-    } 
+    }
     catch (err) {
-        res.status(500).json({message: "Error fetching problems",error: err.message});
+        res.status(500).json({ message: "Error fetching problems", error: err.message });
     }
 };
 
