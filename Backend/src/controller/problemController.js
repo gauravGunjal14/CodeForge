@@ -115,10 +115,15 @@ const updateProblem = async (req, res) => {
 const deleteProblem = async (req, res) => {
     try {
         const problemId = req.params.id;
+        if (!problemId) {
+            return res.status(400).json({ message: "Problem id is required" });
+        }
+
         const deletedProblem = await problemModel.findByIdAndDelete(problemId);
         if (!deletedProblem) {
             return res.status(404).json({ message: "Problem not found" });
         }
+
         res.status(200).json({ message: "Problem deleted successfully" });
     }
     catch (err) {
@@ -128,7 +133,11 @@ const deleteProblem = async (req, res) => {
 
 const getAllProblems = async (req, res) => {
     try {
-        const problems = await problemModel.find();
+        const problems = await problemModel.find().select('_id title description difficulty tags visibleTestCases startCode');
+        if (!problems || problems.length === 0) {
+            return res.status(404).json({ message: "No problems found" });
+        }
+
         res.status(200).json(problems);
     }
     catch (err) {
@@ -139,7 +148,11 @@ const getAllProblems = async (req, res) => {
 const getProblems = async (req, res) => {
     try {
         const problemId = req.params.id;
-        const problem = await problemModel.findById(problemId);
+        if (!problemId) {
+            return res.status(400).json({ message: "Problem id is required" });
+        }
+
+        const problem = await problemModel.findById(problemId).select('_id title description difficulty tags visibleTestCases startCode');
         if (!problem) {
             return res.status(404).json({ message: "Problem not found" });
         }
