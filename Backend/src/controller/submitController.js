@@ -1,6 +1,7 @@
 const Problem = require('../models/problemModel');
 const submission = require('../models/submissionModel');
-const {getLanguageById, submitBatch, submitToken} = require('../utils/problemUtility');
+const User = require('../models/userModel');
+const { getLanguageById, submitBatch, submitToken } = require('../utils/problemUtility');
 
 const submitController = async (req, res) => {
     try {
@@ -31,7 +32,7 @@ const submitController = async (req, res) => {
 
         // judge0 API integration to evaluate the submission
         const languageId = getLanguageById(language);
-        
+
         const submissions = problem.hiddenTestCases.map((testCase) => ({
             source_code: code,
             language_id: languageId,
@@ -51,18 +52,18 @@ const submitController = async (req, res) => {
         let memory = 0;
         let errorMessage = null;
 
-        for(const test of testResult) {
-            if(test.status.id === 3) {
+        for (const test of testResult) {
+            if (test.status.id === 3) {
                 testCasesPassed++;
                 runtime = runtime + parseFloat(test.time);
                 memory = Math.max(memory, test.memory);
             }
-            else{
-                if(test.status.id === 4) {
+            else {
+                if (test.status.id === 4) {
                     status = 'error';
                     errorMessage = test.stderr;
                 }
-                else{
+                else {
                     status = 'wrong';
                     errorMessage = test.stderr;
                 }
@@ -78,6 +79,13 @@ const submitController = async (req, res) => {
 
         await newSubmission.save();
 
+        // upadate the user's submission history
+
+        if (!req.result.problemSolved.includes(problemId)) {
+            req.result.problemSolved.push(problemId);
+            await req.result.save();
+        }
+
         res.status(201).json({ message: "Submission created successfully", submission: newSubmission });
     }
     catch (err) {
@@ -86,4 +94,46 @@ const submitController = async (req, res) => {
     }
 }
 
-module.exports = submitController;
+const runCode = async (req, res) => {
+    try {
+        const userId = req.result._id;
+        const problemId = req.params.id;
+
+        const { code, language } = req.body;
+
+        if (!userId || !problemId || !code || !language) {
+            return res.status(400).json({ message: "All fields are required" });
+        }
+
+        // fetch the problem details from the database
+        const problem = await Problem.findById(problemId);
+        if (!problem) {
+            return res.status(404).json({ message: "Problem not found" });
+        }
+
+
+        // judge0 API integration to evaluate the submission
+        const languageId = getLanguageById(language);
+
+        const submissions = problem.visibleTestCases.map((testCase) => ({
+            source_code: code,
+            language_id: languageId,
+            stdin: testCase.input,
+            expected_output: testCase.output
+        }));
+
+        const submitResults = await submitBatch(submissions);
+
+        const resultToken = submitResults.map((result) => result.token);
+
+        const testResult = await submitToken(resultToken);
+
+        res.status(201).send(testResult);
+    }
+    catch (err) {
+        console.log(err);
+        res.status(500).json({ message: "Internal Server Error" });
+    }
+}
+
+module.exports = {submitController, runCode};

@@ -165,18 +165,15 @@ const getProblems = async (req, res) => {
 
 const getProblemsByUser = async (req, res) => {
     try {
-        const { userId } = req.params;
-        if (!mongoose.Types.ObjectId.isValid(userId)) {
-            return res.status(400).json({ message: "Invalid user id" });
-        }
+        const userId = req.result._id;
 
-        const user = await UserModel.findById(userId);
-        if (!user) {
-            return res.status(404).json({ message: "User not found" });
-        }
+        const user = await User.findById(userId).populate({
+            path: 'problemSolved',
+            select: '_id title difficulty tags'
+        });
 
-        res.status(200).json({ problemsSolved: user.problemSolved });
 
+        res.status(200).send(user.problemSolved);
     }
     catch (err) {
         res.status(500).json({ message: "Error fetching problems", error: err.message });
