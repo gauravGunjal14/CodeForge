@@ -180,11 +180,28 @@ const getProblemsByUser = async (req, res) => {
     }
 };
 
+const submittedProblem = async(req, res) =>{
+    try{
+        const userId = req.result._id;
+        const problemId = req.params.pid;
+
+        const answer = await submission.find({userId, problemId});
+        if(answer.length === 0){
+            return res.status(404).json({ message: "No submission found for this problem by the user" });
+        }
+        res.status(200).json(answer);
+    }
+    catch(err){
+        res.status(500).json({ message: "Error fetching submitted problem", error: err.message });
+    }
+}
+
 module.exports = {
     createProblem,
     updateProblem,
     deleteProblem,
     getProblems,
     getAllProblems,
-    getProblemsByUser
+    getProblemsByUser,
+    submittedProblem
 };
