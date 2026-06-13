@@ -16,9 +16,19 @@ const register = async (req, res) => {
         req.body.role = 'user';
 
         const user = await User.create(req.body);
-        const token = jwt.sign({_id: user._id, email: user.email}, process.env.JWT_KEY, { expiresIn: '1h' });
-        res.cookie("token", token, {maxAge: 3600000 }); // 3600000 ms = 1 hour
-        res.status(201).json({ message: "User registered successfully" });
+
+        const reply = {
+            firstName: user.firstName,
+            emailId: user.email,
+            _id: user._id
+        }
+
+        const token = jwt.sign({ _id: user._id, email: user.email }, process.env.JWT_KEY, { expiresIn: '1h' });
+        res.cookie("token", token, { maxAge: 3600000 }); // 3600000 ms = 1 hour
+        res.status(201).json({
+            user: reply,
+            message: "User registered successfully"
+        });
     }
     catch (err) {
         res.status(500).json({ message: "Error registering user", error: err.message });
@@ -31,9 +41,9 @@ const login = async (req, res) => {
         const email = req.body.email;
         const password = req.body.password;
 
-        if(!email)
+        if (!email)
             throw new Error("Invalid credential");
-        if(!password)
+        if (!password)
             throw new Error("Invalid credential");
 
         const user = await User.findOne({ email });
@@ -43,9 +53,18 @@ const login = async (req, res) => {
             throw new Error("Invalid credential");
         }
 
-        const token = jwt.sign({_id: user._id, email: user.email, role: user.role}, process.env.JWT_KEY, { expiresIn: '1h' });
-        res.cookie("token", token, {maxAge: 3600000 });
-        res.status(200).json({ message: "User logged in successfully" });
+        const reply = {
+            firstName: user.firstName,
+            emailId: user.email,
+            _id: user._id
+        }
+
+        const token = jwt.sign({ _id: user._id, email: user.email, role: user.role }, process.env.JWT_KEY, { expiresIn: '1h' });
+        res.cookie("token", token, { maxAge: 3600000 });
+        res.status(200).json({
+            user: reply,
+            message: "User logged in successfully"
+        });
     }
     catch (err) {
         res.status(500).json({ message: "Error logging in", error: err.message });
@@ -55,11 +74,11 @@ const login = async (req, res) => {
 // logout a user
 const logout = async (req, res) => {
     try {
-        const {token} = req.cookies;
+        const { token } = req.cookies;
 
         const payload = jwt.decode(token);
 
-        await redisClient.set(`token:${token}`,'Blocked');
+        await redisClient.set(`token:${token}`, 'Blocked');
         await redisClient.expireAt(`token:${token}`, payload.exp);
 
         res.cookie("token", null, { expires: new Date(Date.now() - 1000) });
@@ -71,12 +90,12 @@ const logout = async (req, res) => {
 }
 
 const profile = async (req, res) => {
-    try{
+    try {
         const userId = req.params.id;
 
         const user = await User.findById(userId).select('firstName lastName email age problemSolved');
 
-        if(!user)
+        if (!user)
             throw new Error("User not found");
         res.status(200).json({ message: "Profile fetched successfully", user });
     }
@@ -94,8 +113,8 @@ const adminRegister = async (req, res) => {
         req.body.role = 'admin';
 
         const user = await User.create(req.body);
-        const token = jwt.sign({_id: user._id, email: user.email}, process.env.JWT_KEY, { expiresIn: '1h' });
-        res.cookie("token", token, {maxAge: 3600000 }); // 3600000 ms = 1 hour
+        const token = jwt.sign({ _id: user._id, email: user.email }, process.env.JWT_KEY, { expiresIn: '1h' });
+        res.cookie("token", token, { maxAge: 3600000 }); // 3600000 ms = 1 hour
         res.status(201).json({ message: "Admin registered successfully" });
     }
     catch (err) {
@@ -104,7 +123,7 @@ const adminRegister = async (req, res) => {
 }
 
 const deleteProfile = async (req, res) => {
-    try{
+    try {
         const userId = req.result._id;
         await User.findByIdAndDelete(userId);
         await submission.deleteMany({ userId });
