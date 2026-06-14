@@ -1,20 +1,35 @@
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
+import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate } from 'react-router';
+import { registerUser } from '../authSlice';
+import { useEffect } from 'react';
 
 // Schema Validation by using zod
 const signupSchema = z.object({
   firstName: z.string().min(3, "Minimum character should be 3"),
-  emailId: z.string().email("Invalid Email"),
+  email: z.string().email("Invalid Email"),
   password: z.string().min(8, "password is to weak")
 })
 
 function Signup() {
+
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const { isAuthenticated, loading, error } = useSelector((state) => state.auth);
+
   const { register, handleSubmit, formState: { errors }, } = useForm({ resolver: zodResolver(signupSchema) });
 
-  const submittedData = (data) => {
-    console.log(data);
-  }
+  useEffect(()=>{
+    if(isAuthenticated){
+      navigate('/')
+    }
+  }, [isAuthenticated, navigate]);
+
+  const onSubmit = (data) => {
+    dispatch(registerUser(data));
+  };
 
   return (
     <div className="min-h-screen bg-base-300 flex items-center justify-center">
@@ -29,7 +44,7 @@ function Signup() {
           </p>
 
           <form
-            onSubmit={handleSubmit(submittedData)}
+            onSubmit={handleSubmit(onSubmit)}
             className="space-y-4"
           >
             <div>
@@ -56,14 +71,14 @@ function Signup() {
               </label>
 
               <input
-                {...register("emailId")}
+                {...register("email")}
                 type="email"
                 placeholder="Enter your email"
                 className="input input-bordered w-full"
               />
-              {errors.emailId && (
+              {errors.email && (
                 <p className="text-error text-sm mt-1">
-                  {errors.emailId.message}
+                  {errors.email.message}
                 </p>
               )}
             </div>

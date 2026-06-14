@@ -1,6 +1,6 @@
-const Problem = require('../models/problemModel');
+const problemModel = require('../models/problemModel');
 const submission = require('../models/submissionModel');
-const User = require('../models/userModel');
+const userModel = require('../models/userModel');
 const { getLanguageById, submitBatch, submitToken } = require('../utils/problemUtility');
 
 const submitController = async (req, res) => {
@@ -15,7 +15,7 @@ const submitController = async (req, res) => {
         }
 
         // fetch the problem details from the database
-        const problem = await Problem.findById(problemId);
+        const problem = await problemModel.findById(problemId);
         if (!problem) {
             return res.status(404).json({ message: "Problem not found" });
         }

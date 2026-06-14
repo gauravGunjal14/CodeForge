@@ -17,8 +17,8 @@ const userMiddleware = async (req, res, next) => {
             return res.status(401).json({ message: "Access denied. Invalid token." });
         }
 
-        const isPresent = await UserModel.findOne({_id});
-        if(!isPresent){
+        const user = await UserModel.findOne({_id});
+        if(!user){
             return res.status(401).json({ message: "Access denied. Invalid token." });
         }
 
@@ -28,7 +28,7 @@ const userMiddleware = async (req, res, next) => {
             return res.status(401).json({ message: "Access denied. Token is blocked." });
         }
 
-        req.isPresent = isPresent;
+        req.user = user;
 
         next();
     }

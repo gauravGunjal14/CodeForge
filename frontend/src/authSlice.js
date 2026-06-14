@@ -3,26 +3,32 @@ import axiosClient from './utils/axiosClient';
 
 export const registerUser = createAsyncThunk(
     'auth/register',
-    async (useRouteLoaderData, { rejectWithValue }) => {
+    async (userData, { rejectWithValue }) => {
         try {
-            const response = await axiosClient.post('/user/register', userData);
+            const response = await axiosClient.post('/auth/register', userData);
             return response.data.user;
         }
         catch (error) {
-            return rejectWithValue(error);
+            return rejectWithValue(
+                error.response?.data?.message ||
+                error.message
+            );
         }
     }
 );
 
 export const loginUser = createAsyncThunk(
     'auth/login',
-    async (useRouteLoaderData, { rejectWithValue }) => {
+    async (userData, { rejectWithValue }) => {
         try {
-            const response = await axiosClient.post('/user/login', userData);
+            const response = await axiosClient.post('/auth/login', userData);
             return response.data.user;
         }
         catch (error) {
-            return rejectWithValue(error);
+            return rejectWithValue(
+                error.response?.data?.message ||
+                error.message
+            );
         }
     }
 );
@@ -31,11 +37,14 @@ export const checkAuth = createAsyncThunk(
     'auth/check',
     async (_, { rejectWithValue }) => {
         try {
-            const { data } = await axiosClient.post('/user/check');
+            const { data } = await axiosClient.get('/auth/check');
             return data.user;
         }
         catch (error) {
-            return rejectWithValue(error);
+            return rejectWithValue(
+                error.response?.data?.message ||
+                error.message
+            );
         }
     }
 );
@@ -44,11 +53,14 @@ export const logoutUser = createAsyncThunk(
     'auth/logout',
     async (_, { rejectWithValue }) => {
         try {
-            await axiosClient.post('/logout');
+            await axiosClient.post('auth/logout');
             return null;
         }
         catch (error) {
-            return rejectWithValue(error);
+            return rejectWithValue(
+                error.response?.data?.message ||
+                error.message
+            );
         }
     }
 );
@@ -70,12 +82,12 @@ const authSlice = createSlice({
                 state.loading = true;
                 state.error = null;
             })
-            .addCase(registerUser.fulfilled, (state) => {
+            .addCase(registerUser.fulfilled, (state, action) => {
                 state.loading = false;
                 state.isAuthenticated = !!action.payload;
                 state.user = action.payload;
             })
-            .addCase(registerUser.rejected, (state) => {
+            .addCase(registerUser.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload?.message || 'Something went wrong';
                 state.isAuthenticated = false;
@@ -87,12 +99,12 @@ const authSlice = createSlice({
                 state.loading = true;
                 state.error = null;
             })
-            .addCase(loginUser.fulfilled, (state) => {
+            .addCase(loginUser.fulfilled, (state, action) => {
                 state.loading = false;
                 state.isAuthenticated = !!action.payload;
                 state.user = action.payload;
             })
-            .addCase(loginUser.rejected, (state) => {
+            .addCase(loginUser.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload?.message || 'Something went wrong';
                 state.isAuthenticated = false;

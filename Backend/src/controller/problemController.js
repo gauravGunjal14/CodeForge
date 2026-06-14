@@ -167,7 +167,7 @@ const getProblemsByUser = async (req, res) => {
     try {
         const userId = req.result._id;
 
-        const user = await User.findById(userId).populate({
+        const user = await userModel.findById(userId).populate({
             path: 'problemSolved',
             select: '_id title difficulty tags'
         });

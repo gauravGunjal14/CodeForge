@@ -1,4 +1,4 @@
-import { Routes, Route } from "react-router";
+import { Routes, Route, Navigate } from "react-router";
 import HomePage from "./pages/HomePage";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
@@ -13,14 +13,14 @@ function App() {
 
   useEffect(() => {
     dispatch(checkAuth());
-  }, [isAuthenticated]);
+  }, [dispatch]);
 
   return (
     <>
       <Routes>
-        <Route path="/" element={<HomePage />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/signup" element={<Signup />} />
+        <Route path="/" element={isAuthenticated ? <HomePage /> : <Navigate to='/signup' />} />
+        <Route path="/login" element={isAuthenticated ? <Navigate to='/' /> : <Login />} />
+        <Route path="/signup" element={isAuthenticated ? <Navigate to='/' /> : <Signup />} />
       </Routes>
     </>
   );
