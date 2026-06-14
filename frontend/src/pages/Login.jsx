@@ -2,9 +2,9 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate } from 'react-router';
+import { useNavigate, Link } from 'react-router';
 import { loginUser } from '../authSlice';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 // Schema Validation by using zod
 const signupSchema = z.object({
@@ -14,14 +14,16 @@ const signupSchema = z.object({
 
 function Login() {
 
+  const [showPass, SetShowPass] = useState(false);
+
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { isAuthenticated, loading, error } = useSelector((state) => state.auth);
 
   const { register, handleSubmit, formState: { errors }, } = useForm({ resolver: zodResolver(signupSchema) });
 
-  useEffect(()=>{
-    if(isAuthenticated){
+  useEffect(() => {
+    if (isAuthenticated) {
       navigate('/');
     }
   }, [isAuthenticated, navigate]);
@@ -56,13 +58,8 @@ function Login() {
                 {...register("email")}
                 type="email"
                 placeholder="Enter your email"
-                className="input input-bordered w-full"
+                className={`input input-bordered w-full ${errors.email ? 'input-error' : ''}`}
               />
-              {errors.email && (
-                <p className="text-error text-sm mt-1">
-                  {errors.email.message}
-                </p>
-              )}
             </div>
 
             <div>
@@ -70,17 +67,62 @@ function Login() {
                 <span className="label-text">Password</span>
               </label>
 
-              <input
-                {...register("password")}
-                type="password"
-                placeholder="Enter your password"
-                className="input input-bordered w-full"
-              />
-              {errors.password && (
-                <p className="text-error text-sm mt-1">
-                  {errors.password.message}
-                </p>
-              )}
+              <div className='relative'>
+                <input
+                  {...register("password")}
+                  type={showPass ? 'text' : 'password'}
+                  placeholder="Enter your password"
+                  className={`input input-bordered w-full ${errors?.password ? 'input-error' : ''}`}
+                />
+                <button
+                  type='button'
+                  className='absolute top-1/2 right-3 transform -translate-y-1/2 text-gray-500 hover:text-gray-400'
+                  onClick={() => SetShowPass(!showPass)}
+                  aria-label={showPass ? 'hide password' : 'show password'}
+                >
+                  {showPass ? (
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      strokeWidth="1.5"
+                      stroke="currentColor"
+                      className="w-6 h-6"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M3 3l18 18"
+                      />
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M10.477 10.489A3 3 0 0012 15a3 3 0 002.511-1.523M6.228 6.228A9.956 9.956 0 002.25 12c1.39 4.17 5.326 7.5 9.75 7.5a9.96 9.96 0 005.772-1.728M9.88 4.68A9.953 9.953 0 0112 4.5c4.424 0 8.36 3.33 9.75 7.5a9.953 9.953 0 01-1.72 3.22"
+                      />
+                    </svg>
+                  ) : (
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      strokeWidth="1.5"
+                      stroke="currentColor"
+                      className="w-6 h-6"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M2.036 12.322a1.012 1.012 0 010-.644C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.437 0 .644C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.964-7.178z"
+                      />
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                      />
+                    </svg>
+                  )}
+                </button>
+              </div>
             </div>
 
             <button
@@ -92,9 +134,10 @@ function Login() {
 
             <p className="text-center text-sm mt-4">
               Don't have an account?{" "}
-              <span className="link link-primary cursor-pointer">
+              <Link className="link link-primary cursor-pointer"
+                to='/signup'>
                 Sign up
-              </span>
+              </Link>
             </p>
           </form>
         </div>
