@@ -124,7 +124,7 @@ const adminRegister = async (req, res) => {
 
 const deleteProfile = async (req, res) => {
     try {
-        const userId = req.result._id;
+        const userId = req.user._id;
         await User.findByIdAndDelete(userId);
         await submission.deleteMany({ userId });
         res.status(200).json({ message: "Profile deleted successfully" });

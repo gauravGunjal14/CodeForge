@@ -41,7 +41,7 @@ const createProblem = async (req, res) => {
 
         const userProblem = await problemModel.create({
             ...req.body,
-            problemCreator: req.result._id
+            problemCreator: req.user._id
         });
 
         res.status(201).json({ message: "Problem created successfully", problem: userProblem });
@@ -165,7 +165,7 @@ const getProblems = async (req, res) => {
 
 const getProblemsByUser = async (req, res) => {
     try {
-        const userId = req.result._id;
+        const userId = req.user._id;
 
         const user = await userModel.findById(userId).populate({
             path: 'problemSolved',
@@ -182,7 +182,7 @@ const getProblemsByUser = async (req, res) => {
 
 const submittedProblem = async(req, res) =>{
     try{
-        const userId = req.result._id;
+        const userId = req.user._id;
         const problemId = req.params.pid;
 
         const answer = await submission.find({userId, problemId});

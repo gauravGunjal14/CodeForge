@@ -138,12 +138,15 @@ function Signup() {
               </div>
             </div>
 
-            <button
-              type="submit"
-              className="btn btn-primary w-full mt-4"
-            >
-              Sign Up
-            </button>
+            <div>
+              <button
+                type="submit"
+                className="btn btn-primary w-full mt-4"
+                disabled={loading}
+              >
+                {loading ? 'Signing Up...' : 'Sign Up'}
+              </button>
+            </div>
 
             <p className="text-center text-sm mt-4">
               Already have an account?{" "}

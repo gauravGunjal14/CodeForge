@@ -5,7 +5,7 @@ const { getLanguageById, submitBatch, submitToken } = require('../utils/problemU
 
 const submitController = async (req, res) => {
     try {
-        const userId = req.result._id;
+        const userId = req.user._id;
         const problemId = req.params.id;
 
         const { code, language } = req.body;
@@ -81,9 +81,9 @@ const submitController = async (req, res) => {
 
         // upadate the user's submission history
 
-        if (!req.result.problemSolved.includes(problemId)) {
-            req.result.problemSolved.push(problemId);
-            await req.result.save();
+        if (!req.user.problemSolved.includes(problemId)) {
+            req.user.problemSolved.push(problemId);
+            await req.user.save();
         }
 
         res.status(201).json({ message: "Submission created successfully", submission: newSubmission });
@@ -96,7 +96,7 @@ const submitController = async (req, res) => {
 
 const runCode = async (req, res) => {
     try {
-        const userId = req.result._id;
+        const userId = req.user._id;
         const problemId = req.params.id;
 
         const { code, language } = req.body;
