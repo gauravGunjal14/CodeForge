@@ -1,11 +1,11 @@
-const { get } = require('mongoose');
 const problemModel = require('../models/problemModel');
 const userModel = require('../models/UserModel');
+const Submission = require('../models/submissionModel');
 const { getLanguageById, submitBatch, submitToken } = require('../utils/problemUtility');
 
 const createProblem = async (req, res) => {
     try {
-        const { title, description, difficulty, tags, visibleTestCases, hiddenTestCases, startCode, referenceSolution, problemCreator } = req.body;
+        const { title, description, difficulty, tags, visibleTestCases, hiddenTestCases, startCode, referenceSolution } = req.body;
         for (const { language, completeCode } of referenceSolution) {
 
             const languageId = getLanguageById(language);
@@ -52,7 +52,6 @@ const createProblem = async (req, res) => {
         res.status(500).json({
             message: "Error creating problem",
             error: err.message,
-            stack: err.stack
         });
     }
 };
@@ -62,7 +61,9 @@ const updateProblem = async (req, res) => {
         const { title, description, difficulty, tags, visibleTestCases, hiddenTestCases, startCode, referenceSolution, problemCreator } = req.body;
         const { id } = req.params;
         if (!id) {
-            res.status(400).json({ message: "Problem id is required" });
+            return res.status(400).json({
+                message: "Problem id is required"
+            });
         }
 
         const existingProblem = await problemModel.findById(id);
@@ -98,7 +99,7 @@ const updateProblem = async (req, res) => {
 
             for (const test of testResults) {
                 if (test.status.id !== 3) {
-                    return res.status(400).json({ message: `Reference solution failed for test case with input: ${test.stdin}` });
+                    return res.status(400).json({ message: test.status.description });
                 }
             }
         }
@@ -180,18 +181,18 @@ const getProblemsByUser = async (req, res) => {
     }
 };
 
-const submittedProblem = async(req, res) =>{
-    try{
+const submittedProblem = async (req, res) => {
+    try {
         const userId = req.user._id;
         const problemId = req.params.pid;
 
-        const answer = await submission.find({userId, problemId});
-        if(answer.length === 0){
+        const answer = await Submission.find({ userId, problemId });
+        if (answer.length === 0) {
             return res.status(404).json({ message: "No submission found for this problem by the user" });
         }
         res.status(200).json(answer);
     }
-    catch(err){
+    catch (err) {
         res.status(500).json({ message: "Error fetching submitted problem", error: err.message });
     }
 }

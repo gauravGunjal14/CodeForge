@@ -28,7 +28,7 @@ function App() {
         <Route path="/" element={isAuthenticated ? <HomePage /> : <Navigate to='/signup' />} />
         <Route path="/login" element={isAuthenticated ? <Navigate to='/' /> : <Login />} />
         <Route path="/signup" element={isAuthenticated ? <Navigate to='/' /> : <Signup />} />
-        <Route path="/admin" element={<AdminPanel />}></Route>
+        <Route path="/admin" element={isAuthenticated && user?.role === 'admin' ? <AdminPanel /> : <Navigate to='/' />}></Route>
       </Routes>
     </>
   );

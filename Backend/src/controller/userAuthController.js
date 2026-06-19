@@ -20,7 +20,8 @@ const register = async (req, res) => {
         const reply = {
             firstName: user.firstName,
             emailId: user.email,
-            _id: user._id
+            _id: user._id,
+            role: user.role
         }
 
         const token = jwt.sign({ _id: user._id, email: user.email }, process.env.JWT_KEY, { expiresIn: '1h' });

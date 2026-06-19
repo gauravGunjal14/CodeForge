@@ -40,6 +40,8 @@ const submitController = async (req, res) => {
             expected_output: testCase.output
         }));
 
+        console.log(JSON.stringify(submissions, null, 2));
+
         const submitResults = await submitBatch(submissions);
 
         const resultToken = submitResults.map((result) => result.token);

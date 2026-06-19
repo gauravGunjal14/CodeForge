@@ -64,15 +64,6 @@ const submitToken = async (resultTokens) => {
         }
     };
 
-    // async function fetchData() {
-    //     try {
-    //         const response = await axios.request(options);
-    //         return response.data;
-    //     } catch (error) {
-    //         console.error(error);
-    //     }
-    // }
-
     while (true) {
         try {
             const response = await axios.request(options);

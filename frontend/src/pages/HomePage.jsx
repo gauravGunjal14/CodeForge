@@ -136,10 +136,10 @@ function HomePage() {
                 >
                     <option value='all'>Topic</option>
                     <option value='Array'>Array</option>
-                    <option value='Linkedlist'>Linked List</option>
+                    <option value='Linked List'>Linked List</option>
                     <option value='Tree'>Tree</option>
                     <option value='Graph'>Graph</option>
-                    <option value='Dp'>DP</option>
+                    <option value='Dynamic Programming'>DP</option>
                 </select>
             </div >
 
