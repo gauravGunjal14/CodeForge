@@ -1,7 +1,7 @@
 import { logoutUser } from '../authSlice';
 import { useDispatch, useSelector } from 'react-redux';
 import { useEffect, useState } from 'react';
-import { useNavigate, Link } from 'react-router';
+import { useNavigate, NavLink, Link } from 'react-router';
 import axiosClient from '../utils/axiosClient';
 
 function HomePage() {
@@ -156,7 +156,8 @@ function HomePage() {
                         );
 
                         return (
-                            <div
+                            <NavLink
+                                to={`/problem/${problem._id}`}
                                 key={problem._id}
                                 className="bg-base-100 border border-base-300 rounded-2xl p-5 shadow-sm hover:shadow-md hover:border-primary transition-all duration-200 cursor-pointer"
                             >
@@ -193,7 +194,7 @@ function HomePage() {
                                         </span>
                                     </div>
                                 </div>
-                            </div>
+                            </NavLink>
                         );
                     })
                 )}

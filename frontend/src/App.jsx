@@ -3,13 +3,14 @@ import HomePage from "./pages/HomePage";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import AdminPanel from "./pages/AdminPanel"
+import ProblemPage from "./pages/ProblemPage"
 import { checkAuth } from "./authSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect } from "react";
 
 function App() {
 
-  const { isAuthenticated, loading, error } = useSelector((state) => state.auth)
+  const { isAuthenticated, user, loading, error } = useSelector((state) => state.auth)
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -25,10 +26,12 @@ function App() {
   return (
     <>
       <Routes>
-        <Route path="/" element={isAuthenticated ? <HomePage /> : <Navigate to='/signup' />} />
+        <Route path="/" element={isAuthenticated ? <HomePage /> : <Navigate to='/login' />} />
         <Route path="/login" element={isAuthenticated ? <Navigate to='/' /> : <Login />} />
         <Route path="/signup" element={isAuthenticated ? <Navigate to='/' /> : <Signup />} />
         <Route path="/admin" element={isAuthenticated && user?.role === 'admin' ? <AdminPanel /> : <Navigate to='/' />}></Route>
+        {/* <Route path="/admin" element={<AdminPanel />}/> */}
+        <Route path="/problem/:problemId" element={isAuthenticated ? <ProblemPage /> : <Navigate to='/' /> }/>
       </Routes>
     </>
   );

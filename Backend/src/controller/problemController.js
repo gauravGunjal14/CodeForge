@@ -153,7 +153,7 @@ const getProblems = async (req, res) => {
             return res.status(400).json({ message: "Problem id is required" });
         }
 
-        const problem = await problemModel.findById(problemId).select('_id title description difficulty tags visibleTestCases startCode');
+        const problem = await problemModel.findById(problemId).select('_id title description difficulty tags visibleTestCases startCode referenceSolution');
         if (!problem) {
             return res.status(404).json({ message: "Problem not found" });
         }

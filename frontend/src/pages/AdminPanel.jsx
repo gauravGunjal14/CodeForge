@@ -5,8 +5,8 @@ import axiosClient from '../utils/axiosClient';
 import { useNavigate } from 'react-router';
 
 const problemSchema = z.object({
-    title: z.string().min(1, 'Title is required'),
-    description: z.string().min(1, 'Description is required'),
+    title: z.string().min(3, 'Title is required'),
+    description: z.string().min(3, 'Description is required'),
     difficulty: z.enum(['Easy', 'Medium', 'Hard']),
     tags: z.enum(['Array', 'Linked List', 'Graph', 'Dynamic Programming']),
     visibleTestCases: z.array(
