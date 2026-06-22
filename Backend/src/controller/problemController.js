@@ -153,11 +153,27 @@ const getProblems = async (req, res) => {
             return res.status(400).json({ message: "Problem id is required" });
         }
 
-        const problem = await problemModel.findById(problemId).select('_id title description difficulty tags visibleTestCases startCode referenceSolution');
+        const problem = await problemModel.findById(problemId);
+
         if (!problem) {
-            return res.status(404).json({ message: "Problem not found" });
+            return res.status(404).json({
+                message: "Problem not found"
+            });
         }
-        res.status(200).json(problem);
+
+        const response = {
+            _id: problem._id,
+            title: problem.title,
+            description: problem.description,
+            difficulty: problem.difficulty,
+            tags: problem.tags,
+            visibleTestCases: problem.visibleTestCases,
+            startCode: problem.startCode,
+            referenceSolution: problem.referenceSolution,
+            hiddenTestCasesCount: problem.hiddenTestCases.length
+        };
+
+        res.status(200).json(response);
     }
     catch (err) {
         res.status(500).json({ message: "Error fetching problem", error: err.message });

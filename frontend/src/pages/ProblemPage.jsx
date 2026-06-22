@@ -220,7 +220,6 @@ function ProblemPage() {
   };
 
   const visibleExamples = safeArray(problem?.visibleTestCases);
-  const hiddenExamples = safeArray(problem?.hiddenTestCases);
   const starterLanguages = safeArray(problem?.startCode);
   const solutionLanguages = safeArray(problem?.referenceSolution);
 
@@ -282,7 +281,7 @@ function ProblemPage() {
               </span>
               <span className="badge badge-outline">{problem.tags}</span>
               <span className="badge badge-ghost">{visibleExamples.length} Example(s)</span>
-              <span className="badge badge-ghost">{hiddenExamples.length} Hidden</span>
+              <span className="badge badge-ghost">{problem.hiddenTestCasesCount} Hidden</span>
             </div>
 
             <h1 className="text-3xl font-bold tracking-tight leading-tight">
@@ -613,7 +612,7 @@ function ProblemPage() {
           <div className="flex items-center justify-between gap-3">
             <h2 className="text-2xl font-bold">Test Cases</h2>
             <span className="badge badge-outline">
-              {visibleExamples.length} visible / {hiddenExamples.length} hidden
+              {visibleExamples.length} visible / {problem.hiddenTestCasesCount} hidden
             </span>
           </div>
 
