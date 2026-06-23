@@ -3,6 +3,7 @@ import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import axiosClient from '../utils/axiosClient';
 import { logoutUser } from '../authSlice';
+import PageSkeleton from "../components/PageSkeleton";
 
 const DIFFICULTY_OPTIONS = ['all', 'Easy', 'Medium', 'Hard'];
 const TAG_OPTIONS = [
@@ -414,11 +415,7 @@ function HomePage() {
               </div>
 
               {loading ? (
-                <div className="space-y-3">
-                  <div className="skeleton h-28 w-full rounded-2xl" />
-                  <div className="skeleton h-28 w-full rounded-2xl" />
-                  <div className="skeleton h-28 w-full rounded-2xl" />
-                </div>
+                <PageSkeleton />
               ) : filteredProblems.length === 0 ? (
                 <div className="rounded-3xl border border-dashed border-base-300 bg-base-100 p-10 text-center">
                   <h3 className="text-xl font-semibold">No problems found</h3>

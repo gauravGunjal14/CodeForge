@@ -20,23 +20,23 @@ const createProblem = async (req, res) => {
                 expected_output: testCase.output
             }));
 
-            const submitBatchs = await submitBatch(submissions);
+            // const submitBatchs = await submitBatch(submissions);
 
-            if (!submitBatchs || !Array.isArray(submitBatchs)) {
-                return res.status(400).json({
-                    message: "Judge0 did not return submission tokens"
-                });
-            }
+            // if (!submitBatchs || !Array.isArray(submitBatchs)) {
+            //     return res.status(400).json({
+            //         message: "Judge0 did not return submission tokens"
+            //     });
+            // }
 
-            const resultTokens = submitBatchs.map((value) => value.token);
+            // const resultTokens = submitBatchs.map((value) => value.token);
 
-            const testResults = await submitToken(resultTokens);
+            // const testResults = await submitToken(resultTokens);
 
-            for (const test of testResults) {
-                if (test.status.id !== 3) {
-                    return res.status(400).json({ message: `Reference solution failed for test case with input: ${test.stdin}` });
-                }
-            }
+            // for (const test of testResults) {
+            //     if (test.status.id !== 3) {
+            //         return res.status(400).json({ message: `Reference solution failed for test case with input: ${test.stdin}` });
+            //     }
+            // }
         }
 
         const userProblem = await problemModel.create({
@@ -146,6 +146,40 @@ const getAllProblems = async (req, res) => {
     }
 };
 
+const getProblemsAdmin = async (req, res) => {
+    try {
+        const problemId = req.params.id;
+        if (!problemId) {
+            return res.status(400).json({ message: "Problem id is required" });
+        }
+
+        const problem = await problemModel.findById(problemId);
+
+        if (!problem) {
+            return res.status(404).json({
+                message: "Problem not found"
+            });
+        }
+
+        const response = {
+            _id: problem._id,
+            title: problem.title,
+            description: problem.description,
+            difficulty: problem.difficulty,
+            tags: problem.tags,
+            visibleTestCases: problem.visibleTestCases,
+            startCode: problem.startCode,
+            referenceSolution: problem.referenceSolution,
+            hiddenTestCases: problem.hiddenTestCases
+        };
+
+        res.status(200).json(response);
+    }
+    catch (err) {
+        res.status(500).json({ message: "Error fetching problem", error: err.message });
+    }
+};
+
 const getProblems = async (req, res) => {
     try {
         const problemId = req.params.id;
@@ -217,6 +251,7 @@ module.exports = {
     createProblem,
     updateProblem,
     deleteProblem,
+    getProblemsAdmin,
     getProblems,
     getAllProblems,
     getProblemsByUser,

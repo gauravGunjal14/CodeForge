@@ -322,7 +322,7 @@ function AdminPanel() {
             title: "Update Problem",
             description: "Modify existing problems, examples and solutions.",
             icon: PencilLine,
-            path: "/admin/update",
+            path: "/admin/problems",
             color: "text-warning",
             bg: "bg-warning/10"
         },

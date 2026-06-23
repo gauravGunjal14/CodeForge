@@ -129,14 +129,28 @@ function Login() {
               type="submit"
               className="btn btn-primary w-full mt-4"
             >
-              Login
+              {loading ? (
+                <>
+                  <span className="loading loading-spinner loading-sm"></span>
+                  Logging In...
+                </>
+              ) : (
+                "Login"
+              )}
             </button>
 
             <p className="text-center text-sm mt-4">
               Don't have an account?{" "}
               <Link className="link link-primary cursor-pointer"
                 to='/signup'>
-                Sign up
+                {loading ? (
+                  <>
+                    <span className="loading loading-spinner loading-sm"></span>
+                    Creating Account...
+                  </>
+                ) : (
+                  "Sign Up"
+                )}
               </Link>
             </p>
           </form>

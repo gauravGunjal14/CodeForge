@@ -4,6 +4,8 @@ const UserModel = require('../models/UserModel');
 const redisClient = require('../config/redis');
 
 const adminMiddleware = async (req, res, next) => {
+    console.log("Cookies:", req.cookies);
+    console.log("Token:", req.cookies?.token);
     try {
         const token = req.cookies.token;
         if (!token) {

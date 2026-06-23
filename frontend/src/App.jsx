@@ -5,9 +5,12 @@ import Signup from "./pages/Signup";
 import AdminPanel from "./pages/AdminPanel";
 import ProblemPage from "./pages/ProblemPage";
 import CreateProblem from "./pages/CreateProblem";
+import ProblemList from "./components/ProblemList";
+import UpdateProblem from "./pages/UpdateProblem";
 import { checkAuth } from "./authSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect } from "react";
+import Loader from './components/Loader';
 
 function App() {
 
@@ -19,9 +22,12 @@ function App() {
   }, [dispatch]);
 
   if (loading) {
-    return <div className="min-h-screen flex items-center justify-center">
-      <span className="loading loading-spinner loading-lg"></span>
-    </div>
+    return (
+      <Loader
+        text="Checking authentication..."
+        fullScreen
+      />
+    );
   }
 
   return (
@@ -31,17 +37,7 @@ function App() {
         <Route path="/login" element={isAuthenticated ? <Navigate to='/' /> : <Login />} />
         <Route path="/signup" element={isAuthenticated ? <Navigate to='/' /> : <Signup />} />
         <Route path="/admin" element={isAuthenticated && user?.role === 'admin' ? <AdminPanel /> : <Navigate to='/' />}></Route>
-        {/* <Route path="/admin" element={<AdminPanel />}/> */}
         <Route path="/problem/:problemId" element={isAuthenticated ? <ProblemPage /> : <Navigate to='/' />} />
-
-        {/* <Route
-          path="/admin"
-          element={
-            isAuthenticated && user?.role === "admin"
-              ? <AdminPanel />
-              : <Navigate to="/" />
-          }
-        /> */}
 
         <Route
           path="/admin/create"
@@ -50,23 +46,14 @@ function App() {
           }
         />
 
-        {/*<Route
-          path="/admin/update"
-          element={
-            isAuthenticated && user?.role === "admin"
-              ? <UpdateProblem />
-              : <Navigate to="/" />
-          }
-        />
+        <Route path="/admin/problems" element={<ProblemList />} />
 
         <Route
-          path="/admin/delete"
-          element={
-            isAuthenticated && user?.role === "admin"
-              ? <DeleteProblem />
-              : <Navigate to="/" />
-          }
-        /> */}
+          path="/admin/update/:problemId"
+          element={<UpdateProblem />}
+        />
+
+        <Route path="/admin/delete" element={<ProblemList />} />
       </Routes>
     </>
   );
