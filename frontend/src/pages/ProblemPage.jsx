@@ -3,8 +3,9 @@ import { useParams } from 'react-router-dom';
 import Editor from '@monaco-editor/react';
 import axiosClient from '../utils/axiosClient';
 import { useSelector } from 'react-redux';
+import ChatAI from '../components/ChatAI';
 
-const LEFT_TABS = ['description', 'editorial', 'solutions', 'submissions'];
+const LEFT_TABS = ['description', 'editorial', 'solutions', 'submissions', 'chatAI'];
 const RIGHT_TABS = ['code', 'testcase', 'result'];
 
 const LANGUAGE_OPTIONS = ['JavaScript', 'Java', 'C++'];
@@ -524,6 +525,14 @@ function ProblemPage() {
       );
     }
 
+    if (activeLeftTab === 'chatAI') {
+      return (
+        <div className="h-full">
+        <ChatAI />
+        </div>
+      );
+    }
+
     return null;
   };
 
@@ -839,7 +848,7 @@ function ProblemPage() {
                 </div>
               </div>
 
-              <div className="flex-1 overflow-y-auto px-5 py-5">
+              <div className="flex-1 overflow-y-auto px-5 pb-5">
                 {renderLeftTab()}
               </div>
             </div>
