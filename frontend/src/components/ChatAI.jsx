@@ -1,16 +1,23 @@
 import { useForm } from "react-hook-form";
 import { Send, Bot, User, Sparkles } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
+import axiosClient from "../utils/axiosClient";
 
 function ChatAI({ problem }) {
     const [messages, setMessages] = useState([
         {
             role: "model",
-            content: "👋 Hi! I'm your AI coding assistant. Ask me about this problem, hints, approaches, complexity analysis, or debugging."
+            content: "Hi! I'm your AI coding assistant. Ask me about this problem, hints, approaches, complexity analysis, or debugging."
         }
     ]);
 
     const [loading, setLoading] = useState(false);
+
+    const problemContext = {
+        title: problem.title,
+        description: problem.description,
+        visibleTestCases: problem.visibleTestCases
+    };
 
     const { register, handleSubmit, reset } = useForm();
 
@@ -27,30 +34,56 @@ function ChatAI({ problem }) {
 
         if (!userMessage) return;
 
-        const newUserMessage = {
-            role: "user",
-            content: userMessage
-        };
+        const updatedMessages = [
+            ...messages,
+            {
+                role: "user",
+                content: userMessage
+            }
+        ];
 
-        setMessages((prev) => [...prev, newUserMessage]);
+        const recentMessages = updatedMessages.slice(-6);  // just for know for saving api
 
+        setMessages(updatedMessages);
         reset();
-
         setLoading(true);
 
-        // Temporary fake response
-        setTimeout(() => {
+        try {
+            const response = await axiosClient.post(
+                "/chat/ai",
+                {
+                    messages: recentMessages,
+                    problem: problemContext
+                }
+            );
+
+            const newModelMessage = {
+                role: "model",
+                content:
+                    response.data.message ||
+                    response.data.content
+            };
+
+            setMessages((prev) => [
+                ...prev,
+                newModelMessage
+            ]);
+        }
+        catch (error) {
+            console.error(error);
+
             setMessages((prev) => [
                 ...prev,
                 {
                     role: "model",
                     content:
-                        "Backend AI integration pending. Later I'll explain the approach, provide hints, optimize code, and help debug submissions."
+                        "Sorry, I encountered an error."
                 }
             ]);
-
+        }
+        finally {
             setLoading(false);
-        }, 1200);
+        }
     };
 
     return (
