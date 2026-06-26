@@ -2,21 +2,31 @@ import { useForm } from "react-hook-form";
 import { Send, Bot, User, Sparkles } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 import axiosClient from "../utils/axiosClient";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 
-function ChatAI({ problem }) {
+function ChatAI({ problem, selectedLanguage }) {
     const [messages, setMessages] = useState([
         {
             role: "model",
-            content: "Hi! I'm your AI coding assistant. Ask me about this problem, hints, approaches, complexity analysis, or debugging."
+            parts: [{ text: "Hi! I'm your AI coding assistant, how can i help you?" }]
         }
     ]);
 
     const [loading, setLoading] = useState(false);
 
     const problemContext = {
+        id: problem._id,
         title: problem.title,
-        description: problem.description,
-        visibleTestCases: problem.visibleTestCases
+        difficulty: problem.difficulty,
+        tags: problem.tags,
+        description: problem.description.slice(0, 1200),
+        visibleTestCases: problem.visibleTestCases,
+        initialCode:
+            problem.startCode.find(
+                code => code.language === selectedLanguage
+            )?.initialCode,
+        language: selectedLanguage
     };
 
     const { register, handleSubmit, reset } = useForm();
@@ -38,11 +48,25 @@ function ChatAI({ problem }) {
             ...messages,
             {
                 role: "user",
-                content: userMessage
+                parts: [{ text: userMessage }]
             }
         ];
 
-        const recentMessages = updatedMessages.slice(-6);  // just for know for saving api
+        const recentMessages = updatedMessages
+            .filter(
+                message =>
+                    !(
+                        message.role === "model" &&
+                        message.parts[0].text.includes(
+                            "Hi! I'm your AI coding assistant"
+                        )
+                    )
+            )
+            .slice(-6)
+            .map(message => ({
+                role: message.role,
+                text: message.parts[0].text
+            }));  // just for know for saving api
 
         setMessages(updatedMessages);
         reset();
@@ -50,7 +74,7 @@ function ChatAI({ problem }) {
 
         try {
             const response = await axiosClient.post(
-                "/chat/ai",
+                "/ai/chat",
                 {
                     messages: recentMessages,
                     problem: problemContext
@@ -59,9 +83,7 @@ function ChatAI({ problem }) {
 
             const newModelMessage = {
                 role: "model",
-                content:
-                    response.data.message ||
-                    response.data.content
+                parts: [{ text: response.data.message }]
             };
 
             setMessages((prev) => [
@@ -76,8 +98,7 @@ function ChatAI({ problem }) {
                 ...prev,
                 {
                     role: "model",
-                    content:
-                        "Sorry, I encountered an error."
+                    parts: [{ text: "Sorry, I encountered an error." }]
                 }
             ]);
         }
@@ -140,12 +161,64 @@ function ChatAI({ problem }) {
                         </div>
 
                         <div
-                            className={`chat-bubble whitespace-pre-wrap ${message.role === "user"
-                                ? "chat-bubble-primary"
-                                : ""
+                            className={`chat-bubble max-w-full overflow-x-auto ${message.role === "user"
+                                    ? "chat-bubble-primary"
+                                    : ""
                                 }`}
                         >
-                            {message.content}
+                            <ReactMarkdown
+                                remarkPlugins={[remarkGfm]}
+                                components={{
+                                    h1: ({ children }) => (
+                                        <h1 className="text-xl font-bold mb-3">
+                                            {children}
+                                        </h1>
+                                    ),
+                                    h2: ({ children }) => (
+                                        <h2 className="text-lg font-bold mt-4 mb-2">
+                                            {children}
+                                        </h2>
+                                    ),
+                                    h3: ({ children }) => (
+                                        <h3 className="font-semibold mt-3 mb-2">
+                                            {children}
+                                        </h3>
+                                    ),
+                                    p: ({ children }) => (
+                                        <p className="leading-7 mb-2">
+                                            {children}
+                                        </p>
+                                    ),
+                                    ul: ({ children }) => (
+                                        <ul className="list-disc ml-5 space-y-1">
+                                            {children}
+                                        </ul>
+                                    ),
+                                    ol: ({ children }) => (
+                                        <ol className="list-decimal ml-5 space-y-1">
+                                            {children}
+                                        </ol>
+                                    ),
+                                    code({ inline, children }) {
+                                        if (inline) {
+                                            return (
+                                                <code className="bg-base-300 px-1 rounded">
+                                                    {children}
+                                                </code>
+                                            );
+                                        }
+                                        return (
+                                            <pre className="bg-neutral text-neutral-content rounded-xl p-4 overflow-x-auto my-3">
+                                                <code>
+                                                    {children}
+                                                </code>
+                                            </pre>
+                                        );
+                                    }
+                                }}
+                            >
+                                {message.parts[0].text}
+                            </ReactMarkdown>
                         </div>
                     </div>
                 ))}
@@ -178,7 +251,7 @@ function ChatAI({ problem }) {
                         {...register("message", {
                             required: true,
                             minLength: 1,
-                            maxLength: 500
+                            maxLength: 300
                         })}
                         placeholder="Ask AI about this problem..."
                         className="input input-bordered flex-1"

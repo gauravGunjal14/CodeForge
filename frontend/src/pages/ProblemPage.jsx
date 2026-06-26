@@ -466,8 +466,8 @@ function ProblemPage() {
                   statusId === 3 || /accepted/i.test(statusText)
                     ? 'badge-success'
                     : /wrong|failed|error|rejected/i.test(statusText)
-                    ? 'badge-error'
-                    : 'badge-warning';
+                      ? 'badge-error'
+                      : 'badge-warning';
 
                 return (
                   <div
@@ -528,7 +528,10 @@ function ProblemPage() {
     if (activeLeftTab === 'chatAI') {
       return (
         <div className="h-full">
-        <ChatAI />
+          <ChatAI
+            problem={problem}
+            selectedLanguage={selectedLanguage}
+          />
         </div>
       );
     }
@@ -760,11 +763,10 @@ function ProblemPage() {
                           <div className="mb-2 flex items-center justify-between">
                             <span className="font-medium">Test {index + 1}</span>
                             <span
-                              className={`badge ${
-                                t.status?.id === 3 || /accepted/i.test(t.status || '')
+                              className={`badge ${t.status?.id === 3 || /accepted/i.test(t.status || '')
                                   ? 'badge-success'
                                   : 'badge-error'
-                              }`}
+                                }`}
                             >
                               {t.status?.description || t.status || '--'}
                             </span>
