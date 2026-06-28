@@ -11,7 +11,7 @@ import { checkAuth } from "./authSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect } from "react";
 import Loader from './components/Loader';
-
+import LandingPage from "./pages/LandingPage";
 function App() {
 
   const { isAuthenticated, user, loading, error } = useSelector((state) => state.auth)
@@ -54,6 +54,7 @@ function App() {
         />
 
         <Route path="/admin/delete" element={<ProblemList />} />
+        <Route path="/landing" element={<LandingPage />}/>
       </Routes>
     </>
   );

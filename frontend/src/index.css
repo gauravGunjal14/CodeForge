@@ -1,2 +1,20 @@
 @import "tailwindcss";
 @plugin "daisyui";
+
+@theme {
+  --color-background: #09090B;
+  --color-card: #111113;
+  --color-border: #27272A;
+  --color-primary: #7C3AED;
+  --color-secondary: #8B5CF6;
+  --color-success: #22C55E;
+
+  --font-heading: "Sora", sans-serif;
+  --font-body: "Inter", sans-serif;
+}
+
+body {
+  background: #09090B;
+  color: #FAFAFA;
+  font-family: "Inter";
+}
