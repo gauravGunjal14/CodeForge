@@ -27,15 +27,7 @@ function AISection() {
           viewport={{
             once: true
           }}
-          className="
-            bg-card
-            border
-            border-border
-            rounded-[32px]
-            overflow-hidden
-            shadow-2xl
-          "
-        >
+          className="bg-card border border-border rounded-4xl overflow-hidden shadow-2xl">
           <div className="border-b border-border p-5 flex items-center gap-3">
             <div className="w-12 h-12 rounded-full bg-primary flex items-center justify-center">
               <Bot />
@@ -55,7 +47,7 @@ function AISection() {
           <div className="p-6 space-y-5">
 
             <div className="flex gap-3 items-center justify-end">
-              <div className="bg-zinc-800 rounded-2xl p-4">
+              <div className="bg-primary/10 rounded-2xl p-4">
                 How can I optimize Two Sum?
               </div>
 
@@ -69,7 +61,7 @@ function AISection() {
                 <Bot size={18} />
               </div>
 
-              <div className="bg-primary/10 rounded-2xl p-4 text-zinc-200">
+              <div className="bg-zinc-800 rounded-2xl p-4 text-zinc-200">
                 Use a HashMap to reduce time complexity from O(n²) to O(n).
               </div>
             </div>

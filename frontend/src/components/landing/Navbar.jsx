@@ -2,38 +2,49 @@ import { Link } from "react-router-dom";
 
 function Navbar() {
   return (
-    <nav className="sticky top-0 z-50 backdrop-blur-xl bg-black/40 border-b border-zinc-800">
+    <nav className="fixed top-0 left-0 right-0 w-full z-50 backdrop-blur-xl bg-black/40 border-b border-zinc-800">
 
       <div className="max-w-7xl mx-auto h-20 px-6 flex items-center justify-between">
 
-        <h1 className="font-heading text-2xl font-bold">
+        <a className="font-heading text-2xl font-bold"
+          href="/">
           CodeForge
-        </h1>
+        </a>
 
-        <div className="flex items-center gap-8">
+        <div className="hidden md:flex  items-center gap-8 text-zinc-400">
+          <a
+            href="#features"
+            className="relative transition-colors duration-300 hover:text-white after:absolute after:left-0 after:-bottom-1 after:h-[2px] after:w-0 after:bg-primary after:transition-all after:duration-300 hover:after:w-full"
+          >
+            Features
+          </a>
 
-          <div className="hidden md:flex gap-8 text-zinc-400">
-            <a href="#features">Features</a>
-            <a href="#ai">AI Assistant</a>
-            <a href="#problems">Problems</a>
-            <a href="#footer">Contact</a>
-          </div>
+          <a
+            href="#ai"
+            className="relative transition-colors duration-300 hover:text-white after:absolute after:left-0 after:-bottom-1 after:h-[2px] after:w-0 after:bg-primary after:transition-all after:duration-300 hover:after:w-full"
+          >
+            AI Assistant
+          </a>
 
-          <div className="flex gap-3">
-            <Link
-              to="/login"
-              className="hidden md:flex btn btn-ghost"
-            >
-              Login
-            </Link>
+          <a
+            href="#problems"
+            className="relative transition-colors duration-300 hover:text-white after:absolute after:left-0 after:-bottom-1 after:h-[2px] after:w-0 after:bg-primary after:transition-all after:duration-300 hover:after:w-full"
+          >
+            Problems
+          </a>
 
-            <Link
-              to="/signup"
-              className="btn btn-primary"
-            >
-              Get Started
-            </Link>
-          </div>
+          <a
+            href="#footer"
+            className="relative transition-colors duration-300 hover:text-white after:absolute after:left-0 after:-bottom-1 after:h-[2px] after:w-0 after:bg-primary after:transition-all after:duration-300 hover:after:w-full"
+          >
+            Contact
+          </a>
+
+          <Link
+            to="/signup"
+            className="btn btn-primary shadow-lg shadow-primary/20 hover:scale-105 hover:shadow-primary/40 transition-all duration-300">
+            Get Started
+          </Link>
         </div>
 
       </div>

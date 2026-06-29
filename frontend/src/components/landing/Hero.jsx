@@ -23,8 +23,8 @@ function Hero() {
           </h1>
 
           <p className="mt-8 text-zinc-400 text-lg leading-8 max-w-xl">
-            An AI-powered coding platform built to help developers solve problems,
-            understand algorithms, and prepare for technical interviews.
+            Solve coding challenges, explore algorithms, and learn more effectively
+            with an AI-powered platform built for continuous growth and hands-on practice.
           </p>
 
           <div className="mt-10 flex gap-4">
