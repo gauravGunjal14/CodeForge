@@ -33,28 +33,101 @@ function App() {
   return (
     <>
       <Routes>
-        <Route path="/" element={isAuthenticated ? <HomePage /> : <Navigate to='/login' />} />
-        <Route path="/login" element={isAuthenticated ? <Navigate to='/' /> : <Login />} />
-        <Route path="/signup" element={isAuthenticated ? <Navigate to='/' /> : <Signup />} />
-        <Route path="/admin" element={isAuthenticated && user?.role === 'admin' ? <AdminPanel /> : <Navigate to='/' />}></Route>
-        <Route path="/problem/:problemId" element={isAuthenticated ? <ProblemPage /> : <Navigate to='/' />} />
+
+        <Route
+          path="/"
+          element={<LandingPage />}
+        />
+
+        <Route
+          path="/problems"
+          element={
+            isAuthenticated
+              ? <HomePage />
+              : <Navigate to="/login" />
+          }
+        />
+
+        <Route
+          path="/login"
+          element={
+            isAuthenticated
+              ? <Navigate to="/problems" />
+              : <Login />
+          }
+        />
+
+        <Route
+          path="/signup"
+          element={
+            isAuthenticated
+              ? <Navigate to="/problems" />
+              : <Signup />
+          }
+        />
+
+        <Route
+          path="/problem/:problemId"
+          element={
+            isAuthenticated
+              ? <ProblemPage />
+              : <Navigate to="/login" />
+          }
+        />
+
+        <Route
+          path="/admin"
+          element={
+            isAuthenticated &&
+              user?.role === "admin"
+              ? <AdminPanel />
+              : <Navigate to="/" />
+          }
+        />
 
         <Route
           path="/admin/create"
           element={
-            <CreateProblem />
+            isAuthenticated &&
+              user?.role === "admin"
+              ? <CreateProblem />
+              : <Navigate to="/" />
           }
         />
 
-        <Route path="/admin/problems" element={<ProblemList />} />
+        <Route
+          path="/admin/problems"
+          element={
+            isAuthenticated &&
+              user?.role === "admin"
+              ? <ProblemList />
+              : <Navigate to="/" />
+          }
+        />
 
         <Route
           path="/admin/update/:problemId"
-          element={<UpdateProblem />}
+          element={
+            isAuthenticated &&
+              user?.role === "admin"
+              ? <UpdateProblem />
+              : <Navigate to="/" />
+          }
         />
 
-        <Route path="/admin/delete" element={<ProblemList />} />
-        <Route path="/landing" element={<LandingPage />}/>
+        {/* <Route
+          path="/admin/delete"
+          element={
+            <ProblemList
+            />
+          }
+        /> */}
+
+        <Route
+          path="*"
+          element={<Navigate to="/" />}
+        />
+
       </Routes>
     </>
   );

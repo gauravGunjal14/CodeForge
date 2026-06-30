@@ -1,9 +1,10 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { Link, NavLink, useNavigate } from 'react-router-dom';
+import { Link, NavLink, useNavigate, useSearchParams } from 'react-router';
 import { useDispatch, useSelector } from 'react-redux';
 import axiosClient from '../utils/axiosClient';
 import { logoutUser } from '../authSlice';
 import PageSkeleton from "../components/PageSkeleton";
+import Navbar from "../components/Navbar";
 
 const DIFFICULTY_OPTIONS = ['all', 'Easy', 'Medium', 'Hard'];
 const TAG_OPTIONS = [
@@ -58,6 +59,8 @@ function HomePage() {
 
   const menuRef = useRef(null);
 
+  const [searchParams] = useSearchParams();
+
   useEffect(() => {
     const onClickOutside = (event) => {
       if (menuRef.current && !menuRef.current.contains(event.target)) {
@@ -68,6 +71,15 @@ function HomePage() {
     document.addEventListener('mousedown', onClickOutside);
     return () => document.removeEventListener('mousedown', onClickOutside);
   }, []);
+
+  useEffect(() => {
+    const query =
+      searchParams.get("search");
+
+    if (query) {
+      setSearch(query);
+    }
+  }, [searchParams]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -175,243 +187,136 @@ function HomePage() {
   };
 
   return (
-    <div className="min-h-screen bg-base-300">
-      <div className="mx-auto max-w-[1700px] px-3 py-3 lg:px-5">
-        <div className="mb-4 rounded-3xl border border-base-300 bg-base-100 px-5 py-4 shadow-sm">
-          <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-            <div className="flex items-center gap-4">
-              <div className="grid h-12 w-12 place-items-center rounded-2xl bg-primary text-primary-content font-black">
-                {user?.firstName?.charAt(0)?.toUpperCase() || "U"}
-              </div>
-
-              <div>
-                <h1 className="text-2xl font-bold">
-                  CodeForge
-                </h1>
-
-                <p className="text-sm text-base-content/60">
-                  {totalCount} Problems
-                </p>
-              </div>
-            </div>
-
-            <div className="flex flex-wrap items-center gap-2">
-              <NavLink
-                to="/"
-                className={({ isActive }) =>
-                  `btn btn-sm ${isActive ? 'btn-primary' : 'btn-ghost'}`
-                }
-              >
-                Problems
-              </NavLink>
-
-              <span className="btn btn-sm btn-ghost pointer-events-none opacity-60">
-                Contests
-              </span>
-
-              {user?.role === 'admin' && (
-                <Link to="/admin" className="btn btn-sm btn-outline">
-                  Admin Panel
-                </Link>
-              )}
-
-              <div className="divider divider-horizontal mx-0 hidden lg:flex" />
-
-              <div className="relative" ref={menuRef}>
-                <button
-                  onClick={() => setShowMenu((prev) => !prev)}
-                  className="btn btn-sm btn-outline"
-                >
-                  {user?.firstName || 'User'}
-                  <span className="ml-1 opacity-70">▼</span>
-                </button>
-
-                {showMenu && (
-                  <div className="absolute right-0 z-50 mt-2 w-52 overflow-hidden rounded-2xl border border-base-300 bg-base-100 shadow-xl">
-
-                    <div className="border-b border-base-200 px-4 py-3">
-                      <p className="font-semibold">
-                        {user?.firstName}
-                      </p>
-
-                      <p className="text-xs text-base-content/50">
-                        {user?.email || user?.emailId}
-                      </p>
-                    </div>
-
-                    <button
-                      onClick={handleLogout}
-                      className="w-full text-left px-4 py-3 text-error hover:bg-base-200"
-                    >
-                      Logout
-                    </button>
-
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-        </div>
+    <div className="min-h-screen bg-background">
+      <Navbar />
+      <div className="mx-auto max-w-425 px-6 py-10 lg:px-5">
 
         <div>
           <section className="rounded-3xl border border-base-300 bg-base-100 p-5 shadow-xl">
-            <div className="mb-5 grid gap-3 md:grid-cols-4">
-              <div className="rounded-2xl bg-base-200/70 p-4">
-                <p className="text-xs uppercase tracking-wider text-base-content/50">
-                  Total Problems
-                </p>
-                <p className="mt-2 text-2xl font-bold">{totalCount}</p>
-              </div>
+            <section className="mb-8">
+              <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
 
-              <div className="rounded-2xl bg-base-200/70 p-4">
-                <p className="text-xs uppercase tracking-wider text-base-content/50">
-                  Solved
-                </p>
-                <p className="mt-2 text-2xl font-bold text-success">{solvedCount}</p>
-              </div>
+                <div>
+                  <h1 className="text-4xl font-bold tracking-tight">
+                    Problems
+                  </h1>
 
-              <div className="rounded-2xl bg-base-200/70 p-4">
-                <p className="text-xs uppercase tracking-wider text-base-content/50">
-                  Unsolved
-                </p>
-                <p className="mt-2 text-2xl font-bold">{unsolvedCount}</p>
-              </div>
+                  <p className="mt-2 text-base-content/60">
+                    Browse and solve coding challenges to improve your problem-solving skills.
+                  </p>
+                </div>
 
-              <div className="rounded-2xl bg-base-200/70 p-4">
-                <p className="text-xs uppercase tracking-wider text-base-content/50">
-                  Progress
-                </p>
-                <p className="mt-2 text-2xl font-bold">{completion}%</p>
-                <progress
-                  className="progress progress-primary mt-2 w-full"
-                  value={completion}
-                  max="100"
+                <div className="text-sm text-base-content/50">
+                  {totalCount} Problems
+                </div>
+
+              </div>
+            </section>
+
+
+
+            <div className="
+sticky
+top-20
+z-20
+mb-8
+rounded-3xl
+border
+border-zinc-800
+bg-zinc-950/80
+p-5
+backdrop-blur-xl
+">
+
+
+
+              <div className="flex flex-col gap-3 lg:flex-row">
+
+                <input
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  placeholder="Search problems..."
+                  className="input input-bordered flex-1"
                 />
-              </div>
-            </div>
 
-            <div className="rounded-3xl border border-base-300 bg-base-200/50 p-4">
-              <div className="mb-4 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-                <div className="grid w-full gap-4 md:grid-cols-2 xl:grid-cols-4">
-                  <label className="form-control">
-                    <div className="label pb-1">
-                      <span className="label-text text-xs uppercase tracking-wider text-base-content/50">
-                        Search
-                      </span>
-                    </div>
-                    <input
-                      value={search}
-                      onChange={(e) => setSearch(e.target.value)}
-                      type="text"
-                      placeholder="Search by title, tag, difficulty..."
-                      className="input input-bordered w-full rounded-2xl"
-                    />
-                  </label>
-
-                  <label className="form-control">
-                    <div className="label pb-1">
-                      <span className="label-text text-xs uppercase tracking-wider text-base-content/50">
-                        Status
-                      </span>
-                    </div>
-                    <select
-                      className="select select-bordered w-full rounded-2xl"
-                      value={filters.status}
-                      onChange={(e) =>
-                        setFilters((prev) => ({ ...prev, status: e.target.value }))
-                      }
+                <select
+                  className="select select-bordered"
+                  value={filters.difficulty}
+                  onChange={(e) =>
+                    setFilters((prev) => ({
+                      ...prev,
+                      difficulty: e.target.value
+                    }))
+                  }
+                >
+                  {DIFFICULTY_OPTIONS.map((item) => (
+                    <option
+                      key={item}
+                      value={item}
                     >
-                      <option value="all">All Problems</option>
-                      <option value="solved">Solved</option>
-                      <option value="unsolved">Unsolved</option>
-                    </select>
-                  </label>
+                      {item === "all"
+                        ? "Difficulty"
+                        : item}
+                    </option>
+                  ))}
+                </select>
 
-                  <label className="form-control">
-                    <div className="label pb-1">
-                      <span className="label-text text-xs uppercase tracking-wider text-base-content/50">
-                        Difficulty
-                      </span>
-                    </div>
-                    <select
-                      className="select select-bordered w-full rounded-2xl"
-                      value={filters.difficulty}
-                      onChange={(e) =>
-                        setFilters((prev) => ({
-                          ...prev,
-                          difficulty: e.target.value,
-                        }))
-                      }
+                <select
+                  className="select select-bordered"
+                  value={filters.status}
+                  onChange={(e) =>
+                    setFilters((prev) => ({
+                      ...prev,
+                      status: e.target.value
+                    }))
+                  }
+                >
+                  <option value="all">
+                    Status
+                  </option>
+
+                  <option value="solved">
+                    Solved
+                  </option>
+
+                  <option value="unsolved">
+                    Unsolved
+                  </option>
+                </select>
+
+                <select
+                  className="select select-bordered"
+                  value={filters.tag}
+                  onChange={(e) =>
+                    setFilters((prev) => ({
+                      ...prev,
+                      tag: e.target.value
+                    }))
+                  }
+                >
+                  {TAG_OPTIONS.map((item) => (
+                    <option
+                      key={item}
+                      value={item}
                     >
-                      {DIFFICULTY_OPTIONS.map((item) => (
-                        <option key={item} value={item}>
-                          {item === 'all' ? 'All Difficulty' : item}
-                        </option>
-                      ))}
-                    </select>
-                  </label>
+                      {item === "all"
+                        ? "Topic"
+                        : item}
+                    </option>
+                  ))}
+                </select>
 
-                  <label className="form-control">
-                    <div className="label pb-1">
-                      <span className="label-text text-xs uppercase tracking-wider text-base-content/50">
-                        Topic
-                      </span>
-                    </div>
-                    <select
-                      className="select select-bordered w-full rounded-2xl"
-                      value={filters.tag}
-                      onChange={(e) =>
-                        setFilters((prev) => ({
-                          ...prev,
-                          tag: e.target.value,
-                        }))
-                      }
-                    >
-                      {TAG_OPTIONS.map((item) => (
-                        <option key={item} value={item}>
-                          {item === 'all' ? 'All Topics' : item}
-                        </option>
-                      ))}
-                    </select>
-                  </label>
-                </div>
-
-                <div className="flex flex-wrap items-center gap-2">
-                  <label className="form-control">
-                    <div className="label pb-1">
-                      <span className="label-text text-xs uppercase tracking-wider text-base-content/50">
-                        Sort
-                      </span>
-                    </div>
-                    <select
-                      className="select select-bordered rounded-2xl"
-                      value={sortBy}
-                      onChange={(e) => setSortBy(e.target.value)}
-                    >
-                      <option value="default">Default</option>
-                      <option value="title-asc">Title: A → Z</option>
-                      <option value="title-desc">Title: Z → A</option>
-                      <option value="difficulty-easy">Difficulty: Easy → Hard</option>
-                      <option value="difficulty-hard">Difficulty: Hard → Easy</option>
-                    </select>
-                  </label>
-
-                  <button
-                    type="button"
-                    onClick={clearFilters}
-                    className="btn btn-outline rounded-2xl"
-                  >
-                    Clear
-                  </button>
-                </div>
+                <button
+                  onClick={clearFilters}
+                  className="btn btn-outline"
+                >
+                  Clear
+                </button>
               </div>
 
-              <div className="mb-4 flex flex-wrap items-center gap-2">
-                <span className="badge badge-outline">
-                  {filteredProblems.length} shown
-                </span>
-                <span className="badge badge-ghost">Solved: {solvedCount}</span>
-                <span className="badge badge-ghost">Unsolved: {unsolvedCount}</span>
+
+              <div className="mt-4 text-sm text-base-content/50 py-2">
+                Showing {filteredProblems.length} of {totalCount} problems
               </div>
 
               {loading ? (
@@ -425,65 +330,94 @@ function HomePage() {
                 </div>
               ) : (
                 <div className="space-y-4">
-                  {filteredProblems.map((problem) => {
-                    const problemId = String(problem._id);
-                    const isSolved = solvedSet.has(problemId);
+                  {filteredProblems.map((problem, index) => {
+                    const isSolved = solvedSet.has(
+                      String(problem._id)
+                    );
 
                     return (
-                      <Link
-                        to={`/problem/${problem._id}`}
+                      <div
                         key={problem._id}
-                        className="group block rounded-3xl border border-base-300 bg-base-100 p-5 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-primary hover:shadow-lg"
+                        onClick={() =>
+                          navigate(`/problem/${problem._id}`)
+                        }
+                        className="
+          group
+          cursor-pointer
+          rounded-2xl
+          border
+          border-zinc-800
+          bg-[#111113]
+          px-6
+          py-5
+          transition-all
+          duration-200
+          hover:border-primary/50
+          hover:bg-zinc-900/40
+          hover:-translate-y-0.5
+        "
                       >
-                        <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-                          <div className="flex-1">
-                            <div className="mb-3 flex items-center gap-3">
-                              <div
-                                className={`grid h-9 w-9 place-items-center rounded-2xl ${isSolved ? 'bg-success/15 text-success' : 'bg-base-200'
-                                  }`}
-                              >
-                                {isSolved ? '✓' : '•'}
-                              </div>
+                        <div className="flex items-center justify-between">
 
-                              <div>
-                                <h2 className="text-xl font-bold tracking-tight group-hover:text-primary">
-                                  {problem.title}
-                                </h2>
-                                <p className="text-xs uppercase tracking-wider text-base-content/40">
-                                  Click to open problem
-                                </p>
-                              </div>
+                          {/* Left */}
+
+                          <div className="flex items-center gap-5">
+
+                            <div
+                              className={`
+                flex
+                h-9
+                w-9
+                items-center
+                justify-center
+                rounded-full
+                text-lg
+                ${isSolved
+                                  ? "bg-success/10 text-success"
+                                  : "bg-zinc-800 text-zinc-500"
+                                }
+              `}
+                            >
+                              {isSolved ? "✓" : "○"}
                             </div>
 
-                            <p className="max-h-12 overflow-hidden text-sm leading-6 text-base-content/70">
-                              {problem.description}
-                            </p>
+                            <div>
+                              <div className="flex items-center gap-3">
 
-                            <div className="mt-4 flex flex-wrap items-center gap-2">
-                              <span className={`badge ${difficultyBadgeClass(problem.difficulty)}`}>
-                                {problem.difficulty}
-                              </span>
-                              <span className="badge badge-outline">{problem.tags}</span>
-                              {typeof problem.hiddenTestCasesCount === 'number' && (
-                                <span className="badge badge-ghost">
-                                  {problem.hiddenTestCasesCount} Hidden
+                                <span className="text-zinc-500">
+                                  #{index + 1}
                                 </span>
-                              )}
-                              {isSolved && (
-                                <span className="badge badge-success badge-outline">
-                                  Solved
-                                </span>
-                              )}
+
+                                <h3 className="font-semibold text-lg group-hover:text-primary transition">
+                                  {problem.title}
+                                </h3>
+                              </div>
+
+                              <p className="text-sm text-zinc-500 mt-1">
+                                {problem.tags}
+                              </p>
                             </div>
                           </div>
 
-                          <div className="flex items-center gap-2 self-start">
-                            <span className="btn btn-sm btn-primary rounded-2xl">
-                              Open
+                          {/* Right */}
+
+                          <div className="flex items-center gap-3">
+
+                            <span
+                              className={`badge ${difficultyBadgeClass(
+                                problem.difficulty
+                              )}`}
+                            >
+                              {problem.difficulty}
                             </span>
+
+                            <span className="badge badge-outline">
+                              {problem.tags}
+                            </span>
+
                           </div>
                         </div>
-                      </Link>
+                      </div>
                     );
                   })}
                 </div>

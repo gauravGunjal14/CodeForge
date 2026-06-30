@@ -136,17 +136,7 @@ function ProblemShowcase() {
 
 
           <div className="p-5 border-b border-zinc-800">
-            <div className="
-    h-12
-    rounded-2xl
-    bg-zinc-900
-    border
-    border-zinc-800
-    px-5
-    flex
-    items-center
-    text-zinc-500
-  ">
+            <div className="h-12 rounded-2xl bg-zinc-900 border border-zinc-800 px-5 flex items-center text-zinc-5 ">
               Search problems...
             </div>
           </div>
@@ -154,14 +144,7 @@ function ProblemShowcase() {
 
 
 
-          <div className="
-  px-6
-  py-4
-  text-sm
-  text-zinc-500
-  grid
-  grid-cols-[1fr_140px_140px_120px]
-">
+          <div className="px-6 py-4 text-sm text-zinc-500 grid grid-cols-[1fr_140px_140px_120px ">
             <span>Problem</span>
             <span>Difficulty</span>
             <span>Acceptance</span>
@@ -173,20 +156,7 @@ function ProblemShowcase() {
           {problems.map((problem) => (
             <div
               key={problem.title}
-              className="
-      px-6
-      py-5
-      border-t
-      border-zinc-800
-      grid
-      grid-cols-[1fr_140px_140px_120px]
-      items-center
-      hover:bg-zinc-900/40
-      transition
-      duration-300
-      cursor-pointer
-    "
-            >
+              className="px-6 py-5 border-t border-zinc-800 grid grid-cols-[1fr_140px_140px_120px] items-center hover:bg-zinc-900/40 transition duration-300 cursor-pointer">
               <div className="flex items-center gap-4">
 
                 {problem.solved ? (
@@ -213,8 +183,7 @@ function ProblemShowcase() {
               </div>
 
               <span
-                className={`
-        font-medium
+                className={`font-medium
         ${difficultyColor[problem.difficulty]}
       `}
               >
@@ -225,16 +194,7 @@ function ProblemShowcase() {
                 {problem.acceptance}
               </span>
 
-              <span className="
-      text-xs
-      rounded-full
-      bg-zinc-900
-      border
-      border-zinc-800
-      px-3
-      py-1
-      w-fit
-    ">
+              <span className="text-xs rounded-full bg-zinc-900 border border-zinc-800 px-3 py-1 w-fit">
                 {problem.tag}
               </span>
             </div>
@@ -243,29 +203,22 @@ function ProblemShowcase() {
 
 
 
-          <div className="
-  border-t
-  border-zinc-800
-  p-6
-  flex
-  justify-between
-  items-center
-">
-  <div>
-    <h3 className="font-semibold">
-      Ready to solve more?
-    </h3>
+          <div className="border-t border-zinc-800 p-6 flex justify-between items-cente ">
+            <div>
+              <h3 className="font-semibold">
+                Ready to solve more?
+              </h3>
 
-    <p className="text-zinc-500 mt-1 font-medium text-md">
-      Explore hundreds of coding challenges.
-    </p>
-  </div>
+              <p className="text-zinc-500 mt-1 font-medium text-md">
+                Explore hundreds of coding challenges.
+              </p>
+            </div>
 
-  <a className="btn btn-primary rounded-2xl"
-  href="/problems">
-    View All Problems
-  </a>
-</div>
+            <a className="btn btn-primary rounded-2xl"
+              href="/problems">
+              View All Problems
+            </a>
+          </div>
         </motion.div>
 
       </div>
