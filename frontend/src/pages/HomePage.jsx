@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { Link, NavLink, useNavigate, useSearchParams } from 'react-router';
+import { Link, NavLink, useNavigate, useSearchParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import axiosClient from '../utils/axiosClient';
 import { logoutUser } from '../authSlice';
@@ -45,11 +45,13 @@ function HomePage() {
   const navigate = useNavigate();
   const { user } = useSelector((state) => state.auth);
 
+  const [searchParams] = useSearchParams();
+
   const [showMenu, setShowMenu] = useState(false);
   const [loading, setLoading] = useState(true);
   const [problems, setProblems] = useState([]);
   const [solvedProblems, setSolvedProblems] = useState([]);
-  const [search, setSearch] = useState('');
+  const [search, setSearch] = useState(searchParams.get("search") || "");
   const [sortBy, setSortBy] = useState('default');
   const [filters, setFilters] = useState({
     difficulty: 'all',
@@ -58,8 +60,6 @@ function HomePage() {
   });
 
   const menuRef = useRef(null);
-
-  const [searchParams] = useSearchParams();
 
   useEffect(() => {
     const onClickOutside = (event) => {
@@ -74,12 +74,12 @@ function HomePage() {
 
   useEffect(() => {
     const query =
-      searchParams.get("search");
+      new URLSearchParams(location.search).get(
+        "search"
+      ) || "";
 
-    if (query) {
-      setSearch(query);
-    }
-  }, [searchParams]);
+    setSearch(query);
+  }, [location.search]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -213,23 +213,7 @@ function HomePage() {
               </div>
             </section>
 
-
-
-            <div className="
-sticky
-top-20
-z-20
-mb-8
-rounded-3xl
-border
-border-zinc-800
-bg-zinc-950/80
-p-5
-backdrop-blur-xl
-">
-
-
-
+            <div className="top-20 sticky z-20 mb-8 rounded-3xl border border-zinc-800 bg-zinc-950/80 p-5 backdrop-blur-xl ">
               <div className="flex flex-col gap-3 lg:flex-row">
 
                 <input
@@ -341,21 +325,7 @@ backdrop-blur-xl
                         onClick={() =>
                           navigate(`/problem/${problem._id}`)
                         }
-                        className="
-          group
-          cursor-pointer
-          rounded-2xl
-          border
-          border-zinc-800
-          bg-[#111113]
-          px-6
-          py-5
-          transition-all
-          duration-200
-          hover:border-primary/50
-          hover:bg-zinc-900/40
-          hover:-translate-y-0.5
-        "
+                        className="group cursor-pointer rounded-2xl border border-zinc-800 bg-card px-6 py-5 transition-all duration-200 hover:border-primary/50 hover:bg-zinc-900/40 hover:-translate-y-0.5"
                       >
                         <div className="flex items-center justify-between">
 
@@ -364,19 +334,11 @@ backdrop-blur-xl
                           <div className="flex items-center gap-5">
 
                             <div
-                              className={`
-                flex
-                h-9
-                w-9
-                items-center
-                justify-center
-                rounded-full
-                text-lg
-                ${isSolved
+                              className={`flex h-9 w-9 items-center justify-center rounded-full text-lg
+                                ${isSolved
                                   ? "bg-success/10 text-success"
                                   : "bg-zinc-800 text-zinc-500"
-                                }
-              `}
+                                }`}
                             >
                               {isSolved ? "✓" : "○"}
                             </div>

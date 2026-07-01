@@ -4,6 +4,8 @@ import Editor from '@monaco-editor/react';
 import axiosClient from '../utils/axiosClient';
 import { useSelector } from 'react-redux';
 import ChatAI from '../components/ChatAI';
+import Navbar from "../components/Navbar";
+import { Group, Panel, Separator } from "react-resizable-panels";
 
 const LEFT_TABS = ['description', 'editorial', 'solutions', 'submissions', 'chatAI'];
 const RIGHT_TABS = ['code', 'testcase', 'result'];
@@ -764,8 +766,8 @@ function ProblemPage() {
                             <span className="font-medium">Test {index + 1}</span>
                             <span
                               className={`badge ${t.status?.id === 3 || /accepted/i.test(t.status || '')
-                                  ? 'badge-success'
-                                  : 'badge-error'
+                                ? 'badge-success'
+                                : 'badge-error'
                                 }`}
                             >
                               {t.status?.description || t.status || '--'}
@@ -812,28 +814,17 @@ function ProblemPage() {
 
   return (
     <div className="min-h-screen bg-base-300">
-      <div className="mx-auto max-w-[1700px] px-3 py-3 lg:px-5">
-        <div className="mb-3 flex flex-col gap-2 rounded-3xl border border-base-300 bg-base-100 px-5 py-4 shadow-sm lg:flex-row lg:items-center lg:justify-between">
-          <div>
-            <p className="text-xs uppercase tracking-[0.3em] text-base-content/50">
-              Problem Workspace
-            </p>
-            <h1 className="text-2xl font-bold tracking-tight">
-              {problem.title}
-            </h1>
-          </div>
+      <Navbar />
+      <div className="mx-auto h-[90vh] max-w-425 px-3 py-3 lg:px-5">
+        <Group
+          direction="horizontal"
+          className="h-[calc(90vh-2.5rem)] gap-2"
+        >
 
-          <div className="flex flex-wrap items-center gap-2">
-            <span className={`badge ${difficultyBadgeClass(problem.difficulty)}`}>
-              {problem.difficulty}
-            </span>
-            <span className="badge badge-outline">{problem.tags}</span>
-            <span className="badge badge-ghost">User: {user?.firstName || 'Guest'}</span>
-          </div>
-        </div>
-
-        <div className="grid gap-4 lg:grid-cols-[1.02fr_0.98fr]">
-          <section className="lg:sticky lg:top-4 lg:h-[calc(100vh-5.75rem)]">
+          <Panel
+            defaultSize={48}
+            minSize={30}
+          >
             <div className="flex h-full flex-col overflow-hidden rounded-3xl border border-base-300 bg-base-100 shadow-xl">
               <div className="border-b border-base-300 px-4 py-3">
                 <div className="tabs tabs-boxed bg-base-200 p-1">
@@ -854,9 +845,16 @@ function ProblemPage() {
                 {renderLeftTab()}
               </div>
             </div>
-          </section>
+          </Panel>
 
-          <section className="lg:sticky lg:top-4 lg:h-[calc(100vh-5.75rem)]">
+          <Separator className="group w-2 flex items-center justify-center">
+            <div className="h-24 w-1 rounded-full bg-zinc-700 group-hover:bg-primary transition-all" />
+          </Separator>
+
+          <Panel
+            defaultSize={52}
+            minSize={30}
+          >
             <div className="flex h-full flex-col overflow-hidden rounded-3xl border border-base-300 bg-base-100 shadow-xl">
               <div className="border-b border-base-300 px-4 py-3">
                 <div className="tabs tabs-boxed bg-base-200 p-1">
@@ -877,8 +875,8 @@ function ProblemPage() {
                 {renderRightTab()}
               </div>
             </div>
-          </section>
-        </div>
+          </Panel>
+        </Group>
       </div>
     </div>
   );

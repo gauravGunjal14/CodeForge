@@ -53,7 +53,7 @@ function Navbar() {
                     <div className="hidden md:flex items-center gap-8 text-sm text-zinc-400">
 
                         <NavLink
-                            to="/"
+                            to="/problems"
                             className={({ isActive }) =>
                                 `relative transition-colors duration-300 hover:text-white after:absolute after:left-0 after:-bottom-1 after:h-0.5 after:bg-primary after:transition-all after:duration-300
                                 ${isActive
@@ -92,11 +92,7 @@ function Navbar() {
                                 e.key === "Enter" &&
                                 search.trim()
                             ) {
-                                navigate(
-                                    `/?search=${encodeURIComponent(
-                                        search
-                                    )}`
-                                );
+                                navigate(`/problems?search=${encodeURIComponent(search)}`);
                             }
                         }}
                         placeholder="Search problems..."
@@ -124,7 +120,7 @@ function Navbar() {
                     >
                         <button
                             onClick={() => setShowMenu((p) => !p)}
-                            className="w-11 h-11 rounded-full bg-primary text-white font-bold flex items-center justify-center"
+                            className="cursor-pointer w-11 h-11 rounded-full bg-primary text-white font-bold flex items-center justify-center"
                         >
                             {user?.firstName
                                 ?.charAt(0)
@@ -133,14 +129,14 @@ function Navbar() {
 
                         {showMenu && (
                             <div
-                                className="absolute right-0 mt-3 w-56 rounded-2xl bg-card border border-zinc-800 shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-2 "
+                                className="absolute right-0 mt-3 w-56 rounded-2xl bg-card border border-zinc-800 shadow-2xl overflow-hidden animate-in"
                             >
                                 <div className="p-4 border-b border-zinc-800">
                                     <p className="font-semibold">
                                         {user?.firstName}
                                     </p>
                                     <p className="text-xs text-zinc-500">
-                                        {user?.email}
+                                        {user?.emailId}
                                     </p>
                                 </div>
 
