@@ -6,8 +6,11 @@ import { useSelector } from 'react-redux';
 import ChatAI from '../components/ChatAI';
 import Navbar from "../components/Navbar";
 import { Group, Panel, Separator } from "react-resizable-panels";
+import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
+import { oneDark } from "react-syntax-highlighter/dist/esm/styles/prism";
+import { Copy, Check } from "lucide-react";
 
-const LEFT_TABS = ['description', 'editorial', 'solutions', 'submissions', 'chatAI'];
+const LEFT_TABS = ['description', 'editorial', 'solutions', 'submissions', 'Forge AI'];
 const RIGHT_TABS = ['code', 'testcase', 'result'];
 
 const LANGUAGE_OPTIONS = ['JavaScript', 'Java', 'C++'];
@@ -16,6 +19,12 @@ const languageToMonaco = (language) => {
   if (language === 'C++') return 'cpp';
   if (language === 'Java') return 'java';
   return 'javascript';
+};
+
+const languageMap = {
+  "C++": "cpp",
+  "Java": "java",
+  "javascript": "javascript",
 };
 
 const difficultyBadgeClass = (difficulty) => {
@@ -63,6 +72,7 @@ function ProblemPage() {
 
   const [running, setRunning] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [copied, setCopied] = useState(false);
 
   const editorRef = useRef(null);
 
@@ -165,6 +175,15 @@ function ProblemPage() {
     }));
   }, [currentStarterCode, selectedLanguage]);
 
+  const handleCopy = async (code) => {
+    await navigator.clipboard.writeText(code);
+
+    setCopied(true);
+    setTimeout(() => {
+      setCopied(false);
+    }, 2000);
+  };
+
   const handleEditorChange = (value) => {
     setCodeByLanguage((prev) => ({
       ...prev,
@@ -229,7 +248,7 @@ function ProblemPage() {
   if (loading) {
     return (
       <div className="min-h-screen bg-base-300 p-4">
-        <div className="mx-auto max-w-[1600px]">
+        <div className="mx-auto max-w-400">
           <div className="grid gap-4 lg:grid-cols-2">
             <div className="rounded-3xl border border-base-300 bg-base-100 p-6 shadow-xl">
               <div className="skeleton h-8 w-44 mb-4" />
@@ -242,7 +261,7 @@ function ProblemPage() {
 
             <div className="rounded-3xl border border-base-300 bg-base-100 p-6 shadow-xl">
               <div className="skeleton h-8 w-44 mb-4" />
-              <div className="skeleton h-[600px] w-full" />
+              <div className="skeleton h-150 w-full" />
             </div>
           </div>
         </div>
@@ -274,160 +293,289 @@ function ProblemPage() {
   }
 
   const renderLeftTab = () => {
-    if (activeLeftTab === 'description') {
+    if (activeLeftTab === "description") {
       return (
-        <div className="space-y-6">
-          <div className="space-y-3">
-            <div className="flex flex-wrap items-center gap-2">
-              <span className={`badge ${difficultyBadgeClass(problem.difficulty)}`}>
+        <div className="space-y-8 pb-10">
+
+          {/* Header */}
+
+          <div className="space-y-6">
+
+            <div className="flex flex-wrap items-center gap-3">
+
+              <span
+                className={`px-3 py-1 rounded-full text-xs font-semibold border
+                  ${difficultyBadgeClass(problem.difficulty)}
+                `}
+              >
                 {problem.difficulty}
               </span>
-              <span className="badge badge-outline">{problem.tags}</span>
-              <span className="badge badge-ghost">{visibleExamples.length} Example(s)</span>
-              <span className="badge badge-ghost">{problem.hiddenTestCasesCount} Hidden</span>
+
+              <span className="px-3 py-1 rounded-full text-xs border border-zinc-700 bg-zinc-900 text-zinc-300">
+                {problem.tags}
+              </span>
+
+              <span className="px-3 py-1 rounded-full text-xs bg-zinc-900 text-zinc-400">
+                {visibleExamples.length} Examples
+              </span>
+
+              <span className="px-3 py-1 rounded-full text-xs bg-zinc-900 text-zinc-400">
+                {problem.hiddenTestCasesCount} Hidden
+              </span>
+
             </div>
 
-            <h1 className="text-3xl font-bold tracking-tight leading-tight">
-              {problem.title}
-            </h1>
+            <div>
+              <h1 className="text-4xl font-bold tracking-tight text-zinc-100">
+                {problem.title}
+              </h1>
 
-            <p className="whitespace-pre-wrap leading-7 text-base-content/80">
+              <div className="mt-5 h-px bg-zinc-500" />
+            </div>
+
+            <p className="whitespace-pre-wrap leading-8 text-zinc-300">
               {problem.description}
             </p>
           </div>
 
-          {Array.isArray(problem.constraints) && problem.constraints.length > 0 && (
-            <div className="rounded-2xl border border-base-300 bg-base-200/60 p-4">
-              <h3 className="mb-3 text-lg font-semibold">Constraints</h3>
-              <ul className="list-disc space-y-2 pl-5 text-sm text-base-content/80">
-                {problem.constraints.map((constraint, index) => (
-                  <li key={index}>{constraint}</li>
-                ))}
-              </ul>
-            </div>
-          )}
+          {/* Examples */}
 
-          <div className="space-y-4">
-            <h3 className="text-lg font-semibold">Examples</h3>
+          <div className="space-y-5">
+
+            <h3 className="text-2xl font-bold">
+              Examples
+            </h3>
 
             {visibleExamples.length === 0 ? (
-              <div className="rounded-2xl border border-dashed border-base-300 bg-base-200/50 p-6 text-sm text-base-content/60">
+              <div
+                className="rounded-[28px] border border-zinc-900 bg-zinc-950 overflow-hidden shadow-xl"
+              >
                 No examples added yet.
               </div>
             ) : (
-              visibleExamples.map((example, index) => (
-                <div
-                  key={`${example.input}-${index}`}
-                  className="rounded-2xl border border-base-300 bg-base-200/60 p-4 shadow-sm"
-                >
-                  <div className="mb-4 flex items-center justify-between">
-                    <h4 className="font-semibold">Example {index + 1}:</h4>
+              visibleExamples.map(
+                (example, index) => (
+                  <div
+                    key={`${example.input}-${index}`}
+                    className="rounded-3xl border border-base-300 bg-base-300/40 overflow-hidden "
+                  >
+                    <div className="px-5 py-4 border-b border-base-300 bg-base-200/60">
+
+                      <h4 className="font-semibold">
+                        Example {index + 1}
+                      </h4>
+
+                    </div>
+
+                    <div className="p-5 space-y-4">
+
+                      <div>
+                        <p className="text-xs uppercase tracking-wider text-base-content/50 mb-2">
+                          Input
+                        </p>
+
+                        <pre
+                          className="rounded-2xl bg-base-100 p-4 overflow-x-auto text-sm font-mono"
+                        >
+                          {example.input}
+                        </pre>
+                      </div>
+
+                      <div>
+                        <p className="text-xs uppercase tracking-wider text-base-content/50 mb-2">
+                          Output
+                        </p>
+
+                        <pre
+                          className="rounded-2xl bg-base-100 p-4 overflow-x-auto text-sm font-mono"
+                        >
+                          {example.output}
+                        </pre>
+                      </div>
+
+                      {example.explanation && (
+                        <div>
+                          <p className="text-xs uppercase tracking-wider text-base-content/50 mb-2">
+                            Explanation
+                          </p>
+
+                          <div
+                            className="rounded-2xl bg-base-100 p-4 leading-7 text-sm text-base-content/80 "
+                          >
+                            {example.explanation}
+                          </div>
+                        </div>
+                      )}
+                    </div>
                   </div>
-
-                  <div className="grid gap-3 md:grid-cols-2">
-                    <div className="rounded-xl bg-base-100 p-3">
-                      <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-base-content/50">
-                        Input
-                      </p>
-                      <pre className="whitespace-pre-wrap font-mono text-sm">
-                        {example.input}
-                      </pre>
-                    </div>
-
-                    <div className="rounded-xl bg-base-100 p-3">
-                      <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-base-content/50">
-                        Output
-                      </p>
-                      <pre className="whitespace-pre-wrap font-mono text-sm">
-                        {example.output}
-                      </pre>
-                    </div>
-                  </div>
-
-                  {example.explanation && (
-                    <div className="mt-3 rounded-xl bg-base-100 p-3">
-                      <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-base-content/50">
-                        Explanation
-                      </p>
-                      <p className="text-sm leading-6 text-base-content/80">
-                        {example.explanation}
-                      </p>
-                    </div>
-                  )}
-                </div>
-              ))
+                )
+              )
             )}
           </div>
         </div>
       );
     }
 
-    if (activeLeftTab === 'editorial') {
+    if (activeLeftTab === "editorial") {
       return (
-        <div className="space-y-4">
-          <h2 className="text-2xl font-bold">Editorial</h2>
+        <div className="space-y-8 pb-10">
 
-          {problem.editorial ? (
-            <div className="rounded-2xl border border-base-300 bg-base-200/60 p-5 leading-7 text-base-content/80 whitespace-pre-wrap">
-              {problem.editorial}
-            </div>
-          ) : (
-            <div className="rounded-2xl border border-dashed border-base-300 bg-base-200/60 p-6">
-              <h3 className="mb-2 text-lg font-semibold">No editorial added yet</h3>
-              <p className="text-sm text-base-content/70 leading-6">
-                Add an editorial field later if you want to show step-by-step solution notes,
-                complexity analysis, and alternative approaches.
-              </p>
-            </div>
-          )}
+          <div>
+            <h2 className="text-4xl font-bold tracking-tight">
+              Editorial
+            </h2>
+
+            <p className="mt-3 text-zinc-400 leading-7">
+              Detailed explanations, approaches and solution walkthroughs for this problem.
+            </p>
+
+            <div
+              className="mt-5 h-px bg-zinc-500"
+            />
+          </div>
+
+          <div
+            className="rounded-[28px] border border-zinc-800 bg-card p-10 "
+          >
+            <h3 className="text-xl font-semibold text-zinc-100">
+              Editorial Coming Soon...
+            </h3>
+
+            <p className="mt-4 max-w-2xl text-zinc-400 leading-7">
+              The editorial feature is currently unavailable for this problem.
+              Future updates will include detailed written explanations,
+              complexity analysis, alternative approaches, and video solution walkthroughs...
+            </p>
+          </div>
         </div>
       );
     }
 
-    if (activeLeftTab === 'solutions') {
+    if (activeLeftTab === "solutions") {
       return (
-        <div className="space-y-5">
-          <div className="flex flex-wrap items-center justify-between gap-3">
-            <h2 className="text-2xl font-bold">Solutions</h2>
+        <div className="space-y-8 pb-10">
 
-            <div className="tabs tabs-boxed bg-base-200">
-              {solutionLanguages.length > 0 ? (
-                solutionLanguages.map((item) => (
-                  <button
-                    key={item.language}
-                    type="button"
-                    className={`tab ${selectedSolutionLanguage === item.language ? 'tab-active' : ''}`}
-                    onClick={() => setSelectedSolutionLanguage(item.language)}
-                  >
-                    {item.language}
-                  </button>
-                ))
-              ) : (
-                <span className="px-3 py-2 text-sm text-base-content/60">
-                  No saved solutions
-                </span>
-              )}
-            </div>
+          {/* Header */}
+
+          <div>
+            <h2 className="text-4xl font-bold tracking-tight">
+              Solutions
+            </h2>
+
+            <p className="mt-3 text-zinc-400 leading-7">
+              Reference implementations for this problem in different programming languages.
+            </p>
+
+            <div className="mt-5 h-px bg-zinc-500" />
           </div>
 
-          {!currentReferenceSolution ? (
-            <div className="rounded-2xl border border-dashed border-base-300 bg-base-200/60 p-6">
-              <p className="text-sm text-base-content/70">
-                No reference solutions available.
+          {/* No Solutions */}
+
+          {solutionLanguages.length === 0 ? (
+            <div className="rounded-[28px] border border-zinc-800 bg-card p-10">
+              <h3 className="text-xl font-semibold text-zinc-100">
+                Solutions Coming Soon...
+              </h3>
+
+              <p className="mt-4 max-w-2xl text-zinc-400 leading-7">
+                Reference solutions for this problem are not available yet.
+                Future updates will include optimized solutions, alternative
+                approaches, and implementations in multiple languages.
               </p>
             </div>
           ) : (
-            <div className="space-y-4">
-              <div className="rounded-2xl border border-base-300 bg-base-200/60 p-4">
-                <div className="mb-3 flex items-center justify-between">
-                  <h3 className="font-semibold">Reference Solution — {currentReferenceSolution.language}</h3>
+            <>
+              {/* Language Switcher */}
+
+              <div className="flex flex-wrap gap-3">
+
+                {solutionLanguages.map((item) => (
+                  <button
+                    key={item.language}
+                    onClick={() =>
+                      setSelectedSolutionLanguage(
+                        item.language
+                      )
+                    }
+                    className={`px-4 py-2 rounded-xl border transition-all duration-300
+                      ${selectedSolutionLanguage ===
+                        item.language
+                        ? "border-primary bg-primary/10 text-primary"
+                        : "border-zinc-800 bg-card text-zinc-400 hover:text-white"
+                      }
+                `}
+                  >
+                    {item.language}
+                  </button>
+                ))}
+
+              </div>
+
+              {/* Solution Card */}
+
+              <div
+                className="rounded-[28px] border border-zinc-800 bg-card overflow-hidden "
+              >
+                <div
+                  className="px-6 py-4 border-b border-zinc-800 flex items-center justify-between "
+                >
+                  <h3 className="font-semibold text-lg">
+                    Reference Solution
+                  </h3>
+
+                  <span
+                    className="px-3 py-1 rounded-full bg-primary/10 text-primary text-sm"
+                  >
+                    {currentReferenceSolution.language}
+                  </span>
                 </div>
 
-                <pre className="overflow-x-auto rounded-xl bg-base-100 p-4 text-sm leading-6">
-                  <code>{currentReferenceSolution.completeCode}</code>
-                </pre>
+                <div className="relative">
+
+                  <button
+                    onClick={() =>
+                      handleCopy(
+                        currentReferenceSolution.completeCode
+                      )
+                    }
+                    className="absolute top-4 right-4 z-10 btn btn-sm bg-zinc-800 border-zinc-700 hover:bg-zinc-700 "
+                  >
+                    {copied ? (
+                      <>
+                        <Check size={14} />
+                        Copied
+                      </>
+                    ) : (
+                      <>
+                        <Copy size={14} />
+                        Copy
+                      </>
+                    )}
+                  </button>
+
+                  <SyntaxHighlighter
+                    language={languageMap[currentReferenceSolution.language.toLowerCase()] || "javascript"}
+                    style={oneDark}
+                    showLineNumbers
+                    wrapLongLines
+                    customStyle={{
+                      margin: 0,
+                      padding: "24px",
+                      background: "#0B0B0D",
+                      fontSize: "14px",
+                      borderRadius: "0px"
+                    }}
+                    lineNumberStyle={{
+                      color: "#52525b",
+                      minWidth: "2.5em"
+                    }}
+                  >
+                    {currentReferenceSolution.completeCode}
+                  </SyntaxHighlighter>
+
+                </div>
               </div>
-            </div>
+            </>
           )}
         </div>
       );
@@ -436,25 +584,37 @@ function ProblemPage() {
     if (activeLeftTab === 'submissions') {
       return (
         <div className="space-y-5">
-          <div className="flex items-center justify-between gap-3">
-            <h2 className="text-2xl font-bold">Submissions</h2>
-            <span className="badge badge-outline">{submissions.length} record(s)</span>
+          <div>
+            <h2 className="text-4xl font-bold tracking-tight">
+              Submissions
+            </h2>
+
+            <p className="mt-3 text-zinc-400 leading-7">
+              Review your previous submissions, runtime and memory usage.
+            </p>
+
+            <div className="mt-5 h-px bg-zinc-500" />
           </div>
 
           {loadingSubmissions ? (
-            <div className="space-y-3">
-              <div className="skeleton h-24 w-full" />
-              <div className="skeleton h-24 w-full" />
-              <div className="skeleton h-24 w-full" />
+            <div className="space-y-4">
+              <div className="h-20 rounded-3xl bg-zinc-900 animate-pulse" />
+              <div className="h-20 rounded-3xl bg-zinc-900 animate-pulse" />
+              <div className="h-20 rounded-3xl bg-zinc-900 animate-pulse" />
             </div>
           ) : submissions.length === 0 ? (
-            <div className="rounded-2xl border border-dashed border-base-300 bg-base-200/60 p-6">
-              <p className="text-sm text-base-content/70">
-                No submissions found for this problem yet.
+            <div className="rounded-[28px] border border-zinc-800 bg-card p-10">
+              <h3 className="text-xl font-semibold text-zinc-100">
+                No submissions yet
+              </h3>
+
+              <p className="mt-4 max-w-2xl text-zinc-400 leading-7">
+                You haven't submitted a solution for this problem yet.
+                Submit your code to track your progress and performance.
               </p>
             </div>
           ) : (
-            <div className="space-y-3">
+            <div className="overflow-hidden rounded-[28px] border border-zinc-800 bg-card ">
               {submissions.map((submission, index) => {
                 const statusText =
                   submission.status?.description ||
@@ -474,7 +634,7 @@ function ProblemPage() {
                 return (
                   <div
                     key={submission._id || submission.token || index}
-                    className="rounded-2xl border border-base-300 bg-base-200/60 p-4 shadow-sm"
+                    className="grid grid-cols-[2fr_1fr_1fr_1fr_1.5fr] gap-4 px-6 py-5 border-b border-zinc-800 hover:bg-zinc-900/40 transition-colors "
                   >
                     <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
                       <div className="flex items-center gap-2">
@@ -527,7 +687,7 @@ function ProblemPage() {
       );
     }
 
-    if (activeLeftTab === 'chatAI') {
+    if (activeLeftTab === 'Forge AI') {
       return (
         <div className="h-full">
           <ChatAI
@@ -841,7 +1001,7 @@ function ProblemPage() {
                 </div>
               </div>
 
-              <div className="flex-1 overflow-y-auto px-5 pb-5">
+              <div className="flex-1 overflow-y-auto px-5 py-5">
                 {renderLeftTab()}
               </div>
             </div>

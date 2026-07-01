@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, Link } from 'react-router';
 import { registerUser } from '../authSlice';
 import { useEffect, useState } from 'react';
+import { Eye, EyeOff, Code2, Sparkles } from "lucide-react";
 
 // Schema Validation by using zod
 const signupSchema = z.object({
@@ -34,127 +35,272 @@ function Signup() {
   };
 
   return (
-    <div className="min-h-screen bg-base-300 flex items-center justify-center">
-      <div className="card w-full max-w-md bg-base-200 shadow-2xl">
-        <div className="card-body">
-          <h1 className="text-3xl font-bold text-center mb-2">
-            Create Account
+    <div className="min-h-screen bg-[#09090B] text-white flex">
+
+      {/* Left Side */}
+
+      <div className="hidden lg:flex w-1/2 relative overflow-hidden border-r border-zinc-800">
+
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,#7c3aed30,transparent_60%)]" />
+
+        <div className="relative z-10 flex flex-col justify-center px-20">
+
+          <Link
+            to="/"
+            className="flex items-center gap-3 mb-12"
+          >
+            <div className="w-12 h-12 rounded-2xl bg-primary flex items-center justify-center">
+              <Code2 size={24} />
+            </div>
+
+            <span className="text-3xl font-bold font-heading">
+              CodeForge
+            </span>
+          </Link>
+
+          <h1 className="text-6xl font-bold leading-tight">
+            Start your
+            <br />
+            coding journey
+            <br />
+            today.
           </h1>
 
-          <p className="text-center text-base-content/70 mb-6">
-            Start solving coding problems today
+          <p className="mt-8 text-zinc-400 text-lg max-w-xl leading-8">
+            Create your account and start solving coding
+            problems, tracking progress and improving your
+            problem-solving skills.
           </p>
+
+          <div className="mt-14 space-y-5">
+
+            <div className="flex items-center gap-4 text-zinc-300">
+              <Sparkles
+                size={18}
+                className="text-primary"
+              />
+              AI Coding Assistant
+            </div>
+
+            <div className="flex items-center gap-4 text-zinc-300">
+              <Sparkles
+                size={18}
+                className="text-primary"
+              />
+              Online Judge System
+            </div>
+
+            <div className="flex items-center gap-4 text-zinc-300">
+              <Sparkles
+                size={18}
+                className="text-primary"
+              />
+              Submission Tracking
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      {/* Right Side */}
+
+      <div className="flex-1 flex items-center justify-center p-8">
+
+        <div
+          className="
+          w-full
+          max-w-md
+          rounded-[32px]
+          border
+          border-zinc-800
+          bg-[#111113]
+          p-10
+          shadow-2xl
+        "
+        >
+          <div className="text-center">
+
+            <h1 className="text-4xl font-bold">
+              Create Account
+            </h1>
+
+            <p className="mt-3 text-zinc-400">
+              Join CodeForge and start solving problems.
+            </p>
+
+          </div>
 
           <form
             onSubmit={handleSubmit(onSubmit)}
-            className="space-y-4"
+            className="mt-10 space-y-6"
           >
+
+            {/* First Name */}
+
             <div>
-              <label className="label">
-                <span className="label-text">First Name</span>
+              <label className="text-sm text-zinc-400 mb-2 block">
+                First Name
               </label>
 
               <input
                 {...register("firstName")}
                 type="text"
                 placeholder="Enter your first name"
-                className={`input input-bordered w-full ${errors.firstName ? 'input-error' : ''}`}
+                className={`
+                w-full
+                h-13
+                rounded-2xl
+                bg-zinc-900
+                border
+                px-5
+                outline-none
+                transition
+                ${errors.firstName
+                    ? "border-red-500"
+                    : "border-zinc-800 focus:border-primary"
+                  }
+              `}
               />
+
+              {errors.firstName && (
+                <p className="text-red-400 text-sm mt-2">
+                  {errors.firstName.message}
+                </p>
+              )}
             </div>
 
+            {/* Email */}
+
             <div>
-              <label className="label">
-                <span className="label-text">Email</span>
+              <label className="text-sm text-zinc-400 mb-2 block">
+                Email
               </label>
 
               <input
                 {...register("email")}
                 type="email"
                 placeholder="Enter your email"
-                className={`input input-bordered w-full ${errors.email ? 'input-error' : ''}`}
+                className={`
+                w-full
+                h-13
+                rounded-2xl
+                bg-zinc-900
+                border
+                px-5
+                outline-none
+                transition
+                ${errors.email
+                    ? "border-red-500"
+                    : "border-zinc-800 focus:border-primary"
+                  }
+              `}
               />
+
+              {errors.email && (
+                <p className="text-red-400 text-sm mt-2">
+                  {errors.email.message}
+                </p>
+              )}
             </div>
 
+            {/* Password */}
+
             <div>
-              <label className="label">
-                <span className="label-text">Password</span>
+              <label className="text-sm text-zinc-400 mb-2 block">
+                Password
               </label>
 
-              <div className='relative'>
+              <div className="relative">
+
                 <input
                   {...register("password")}
-                  type={showPass ? 'text' : 'password'}
+                  type={showPass ? "text" : "password"}
                   placeholder="Enter your password"
-                  className={`input input-bordered w-full ${errors?.password ? 'input-error' : ''}`}
+                  className={`
+                  w-full
+                  h-13
+                  rounded-2xl
+                  bg-zinc-900
+                  border
+                  px-5
+                  pr-14
+                  outline-none
+                  transition
+                  ${errors.password
+                      ? "border-red-500"
+                      : "border-zinc-800 focus:border-primary"
+                    }
+                `}
                 />
+
                 <button
-                  type='button'
-                  className='absolute top-1/2 right-3 transform -translate-y-1/2 text-gray-500 hover:text-gray-400'
-                  onClick={() => SetShowPass(!showPass)}
-                  aria-label={showPass ? 'hide password' : 'show password'}
+                  type="button"
+                  onClick={() =>
+                    SetShowPass(!showPass)
+                  }
+                  className="
+                  absolute
+                  right-4
+                  top-1/2
+                  -translate-y-1/2
+                  text-zinc-500
+                  hover:text-zinc-300
+                "
                 >
                   {showPass ? (
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      strokeWidth="1.5"
-                      stroke="currentColor"
-                      className="w-6 h-6"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M3 3l18 18"
-                      />
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M10.477 10.489A3 3 0 0012 15a3 3 0 002.511-1.523M6.228 6.228A9.956 9.956 0 002.25 12c1.39 4.17 5.326 7.5 9.75 7.5a9.96 9.96 0 005.772-1.728M9.88 4.68A9.953 9.953 0 0112 4.5c4.424 0 8.36 3.33 9.75 7.5a9.953 9.953 0 01-1.72 3.22"
-                      />
-                    </svg>
+                    <EyeOff size={20} />
                   ) : (
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      strokeWidth="1.5"
-                      stroke="currentColor"
-                      className="w-6 h-6"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M2.036 12.322a1.012 1.012 0 010-.644C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.437 0 .644C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.964-7.178z"
-                      />
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-                      />
-                    </svg>
+                    <Eye size={20} />
                   )}
                 </button>
               </div>
+
+              {errors.password && (
+                <p className="text-red-400 text-sm mt-2">
+                  {errors.password.message}
+                </p>
+              )}
             </div>
 
-            <div>
-              <button
-                type="submit"
-                className="btn btn-primary w-full mt-4"
-                disabled={loading}
-              >
-                {loading ? 'Signing Up...' : 'Sign Up'}
-              </button>
-            </div>
+            {/* Button */}
 
-            <p className="text-center text-sm mt-4">
+            <button
+              type="submit"
+              disabled={loading}
+              className="
+              w-full
+              h-13
+              rounded-2xl
+              bg-primary
+              font-semibold
+              hover:scale-[1.02]
+              transition-all
+              shadow-lg
+              shadow-primary/20
+              disabled:opacity-70
+            "
+            >
+              {loading ? (
+                <span className="loading loading-spinner loading-sm" />
+              ) : (
+                "Create Account"
+              )}
+            </button>
+
+            <p className="text-center text-zinc-500">
               Already have an account?{" "}
-              <Link className="link link-primary cursor-pointer"
-                to='/login'>
+              <Link
+                to="/login"
+                className="
+                text-primary
+                hover:text-primary/80
+                font-medium
+              "
+              >
                 Login
               </Link>
             </p>
+
           </form>
         </div>
       </div>
