@@ -1,4 +1,4 @@
-const User = require('../models/UserModel');
+const User = require('../models/userModel');
 const submission = require('../models/submissionModel');
 const validateUser = require('../utils/validateUser');
 const bcrypt = require('bcrypt');

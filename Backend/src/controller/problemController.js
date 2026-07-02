@@ -1,5 +1,5 @@
 const problemModel = require('../models/problemModel');
-const userModel = require('../models/UserModel');
+const UserModel = require('../models/userModel');
 const Submission = require('../models/submissionModel');
 const { getLanguageById, submitBatch, submitToken } = require('../utils/problemUtility');
 
@@ -218,7 +218,7 @@ const getProblemsByUser = async (req, res) => {
     try {
         const userId = req.user._id;
 
-        const user = await userModel.findById(userId).populate({
+        const user = await UserModel.findById(userId).populate({
             path: 'problemSolved',
             select: '_id title difficulty tags'
         });
