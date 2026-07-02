@@ -18,10 +18,10 @@ app.use(cors({
 app.use(express.json());
 app.use(cookieParser());
 
-app.use("/auth", authRouter);
-app.use("/problem", problemRouter);
-app.use("/submission", submitRouter);
-app.use('/ai', aiRouter)
+app.use("/api/auth", authRouter);
+app.use("/api/problem", problemRouter);
+app.use("/api/submission", submitRouter);
+app.use("/api/ai", aiRouter);
 
 const initializeConnection = async () => {
     try {
