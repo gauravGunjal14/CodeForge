@@ -25,7 +25,12 @@ const register = async (req, res) => {
         }
 
         const token = jwt.sign({ _id: user._id, email: user.email }, process.env.JWT_KEY, { expiresIn: '1h' });
-        res.cookie("token", token, { maxAge: 3600000 }); // 3600000 ms = 1 hour
+        res.cookie("token", token, {
+            httpOnly: true,
+            secure: true,
+            sameSite: "none",
+            maxAge: 3600000,
+        });
         res.status(201).json({
             user: reply,
             message: "User registered successfully"
@@ -48,7 +53,10 @@ const login = async (req, res) => {
             throw new Error("Invalid credential");
 
         const user = await User.findOne({ email });
-
+        if (!user) {
+            throw new Error("Invalid credential");
+        }
+        
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) {
             throw new Error("Invalid credential");
@@ -62,7 +70,12 @@ const login = async (req, res) => {
         }
 
         const token = jwt.sign({ _id: user._id, email: user.email, role: user.role }, process.env.JWT_KEY, { expiresIn: '1h' });
-        res.cookie("token", token, { maxAge: 3600000 });
+        res.cookie("token", token, {
+            httpOnly: true,
+            secure: true,
+            sameSite: "none",
+            maxAge: 3600000,
+        });
         res.status(200).json({
             user: reply,
             message: "User logged in successfully"
@@ -83,7 +96,11 @@ const logout = async (req, res) => {
         await redisClient.set(`token:${token}`, 'Blocked');
         await redisClient.expireAt(`token:${token}`, payload.exp);
 
-        res.cookie("token", null, { expires: new Date(Date.now() - 1000) });
+        res.clearCookie("token", {
+            httpOnly: true,
+            secure: true,
+            sameSite: "none",
+        });
         res.status(200).json({ message: "User logged out successfully" });
     }
     catch (err) {
