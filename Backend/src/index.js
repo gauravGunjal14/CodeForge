@@ -10,10 +10,15 @@ const aiRouter = require("./routes/aiRouter")
 const redisClient = require("./config/redis");
 const cors = require('cors');
 
-app.use(cors({
-    origin: 'http://localhost:5173',
-    credentials: true
-}));
+app.use(
+    cors({
+        origin: [
+            "http://localhost:5173",
+            "https://codeforge-app.vercel.app",
+        ],
+        credentials: true,
+    })
+);
 
 app.use(express.json());
 app.use(cookieParser());
@@ -28,8 +33,10 @@ const initializeConnection = async () => {
         await Promise.all([main(), redisClient.connect()]);
         console.log("Connected to database and Redis successfully.");
 
-        app.listen(process.env.PORT, () => {
-            console.log('Server is running on port ' + process.env.PORT);
+        const PORT = process.env.PORT || 3000;
+
+        app.listen(PORT, () => {
+            console.log(`Server is running on port ${PORT}`);
         });
 
     }
