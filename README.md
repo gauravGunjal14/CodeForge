@@ -1,6 +1,14 @@
+![React](https://img.shields.io/badge/React-19-blue)
+![Node.js](https://img.shields.io/badge/Node.js-20-green)
+![MongoDB](https://img.shields.io/badge/MongoDB-Database-brightgreen)
+![License](https://img.shields.io/badge/Status-Active-success)
 # CodeForge
 
 CodeForge is an AI-powered coding platform designed for practicing data structures and algorithms, solving curated problems, writing and testing code in an online editor, tracking submissions, and getting problem-focused AI assistance. The application is built with a modern React frontend, a Node.js/Express backend, MongoDB for persistence, Redis for session/token handling, and Monaco Editor for the code workspace.
+
+## Live Demo
+
+Link: https://codeforge-app.vercel.app
 
 ## Project Status
 
@@ -13,6 +21,32 @@ CodeForge is under active development. The core flows are implemented, including
 - AI assistant for problem-related help
 
 Some product areas are still evolving, including profile management enhancements, richer analytics, and additional workspace polish.
+
+## Screenshots
+
+### Landing Page
+
+![Landing Page](./screenshots/landing-page.png)
+
+### Login Page
+
+![Login Page](./screenshots/login-page.png)
+
+### Problems Page
+
+![Problems Page](./screenshots/problems-page.png)
+
+### Problem Workspace
+
+![Problem Workspace](./screenshots/problem-workspace.png)
+
+### Admin Dashboard
+
+![Admin Dashboard](./screenshots/admin-dashboard.png)
+
+### AI Assistant
+
+![AI Assistant](./screenshots/ai-assistant.png)
 
 ## Features
 
@@ -246,26 +280,52 @@ A split-screen workspace built for focused coding practice:
 ### Admin panel
 A private workspace for maintaining problem content, managing edits, and handling platform content.
 
-## Design Principles
+## Deployment
 
-CodeForge uses a consistent product language across the app:
+Frontend is deployed on Vercel.
 
-- Dark premium interface
-- Minimal visual noise
-- Strong spacing and hierarchy
-- Rounded surfaces
-- Purple-accented primary actions
-- Developer-first UI patterns
-- Clear separation between browsing, solving, and administration
+Backend is deployed on Render.
 
-## AI Assistant Policy
+Database is hosted on MongoDB Atlas.
 
-The assistant is intended to stay focused on coding and DSA-related help. It should:
-- Answer problem-solving questions
-- Explain approaches and complexity
-- Help debug code
-- Suggest optimizations
-- Avoid unrelated general-purpose conversation where possible
+Redis is hosted on Redis Cloud.
+
+## Roadmap
+
+- [x] Authentication
+- [x] Problem Workspace
+- [x] Monaco Editor Integration
+- [x] AI Assistant
+- [x] Admin Dashboard
+- [x] Submission History
+- [ ] User Profiles
+- [ ] Contest System
+- [ ] Leaderboards
+- [ ] Discussion Forum
+- [ ] Company-wise Problem Sheets
+- [ ] Editorial Videos
+- [ ] Analytics Dashboard
+- [ ] Dark/Light Theme Switching
+
+## Contributing
+
+Contributions, issues, and feature requests are welcome.
+
+1. Fork the repository.
+2. Create a new branch.
+3. Commit your changes.
+4. Push to your branch.
+5. Open a Pull Request.
+
+## Author
+
+Gaurav Gunjal
+
+GitHub:
+https://github.com/gauravGunjal14
+
+LinkedIn:
+www.linkedin.com/in/gaurav-gunjal14
 
 ## License
 
